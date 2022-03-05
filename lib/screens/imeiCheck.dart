@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:flutter_config/flutter_config.dart';
 import 'package:gpsinstallation/models/hardwareDataModel.dart';
 import 'package:http/http.dart' as http;
 
@@ -19,10 +20,10 @@ class _imeiCheckState extends State<imeiCheck> {
   String _scanBarcode = 'Unknown';
   String _phoneNumber = "Unknown";
   HardwareDataModel _hardwareDataModel = new HardwareDataModel();
+  String hardwareAPIKey = FlutterConfig.get("hardwareApi");
 
   Future<void> callApi(String imeiText) async {
-    var url =
-        Uri.parse("http://load.dev.truckseasy.com:8080/hardwaredata/$imeiText");
+    var url = Uri.parse("$hardwareAPIKey/$imeiText");
 
     var response = await http.get(url);
     var body = response.body;
