@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_config/flutter_config.dart';
 import 'package:get/get.dart';
 import 'package:gpsinstallation/screens/imeiCheck.dart';
+import 'package:gpsinstallation/screens/powerCheckOne.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Required by FlutterConfig
@@ -10,6 +11,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  static String imei = "Unknown";
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
@@ -24,6 +26,7 @@ class MyApp extends StatelessWidget {
                   title: "Index",
                 )),
         GetPage(name: '/imeiCheck', page: () => const imeiCheck()),
+        GetPage(name: '/powerCheck1', page: () => const PowerCheckOne()),
       ],
     );
   }
@@ -48,11 +51,19 @@ class _MyHomePageState extends State<MyHomePage> {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Row(
+              Column(
                 children: [
                   ElevatedButton(
                     onPressed: () => {Get.toNamed("/imeiCheck")},
                     child: const Text('Check Imei',
+                        style: TextStyle(color: Colors.white)),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  ElevatedButton(
+                    onPressed: () => {Get.toNamed("/powerCheck1")},
+                    child: const Text('Power Check 1',
                         style: TextStyle(color: Colors.white)),
                   )
                 ],

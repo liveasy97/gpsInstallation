@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_config/flutter_config.dart';
+import 'package:gpsinstallation/main.dart';
 import 'package:gpsinstallation/models/hardwareDataModel.dart';
 import 'package:http/http.dart' as http;
 
@@ -45,6 +46,7 @@ class _imeiCheckState extends State<imeiCheck> {
 
     setState(() {
       _scanBarcode = barcodeScanRes;
+      MyApp.imei = _scanBarcode;
       callApi(_scanBarcode);
     });
   }
@@ -74,6 +76,7 @@ class _imeiCheckState extends State<imeiCheck> {
                         },
                         onFieldSubmitted: (text) {
                           _scanBarcode = text;
+                          MyApp.imei = _scanBarcode;
                           callApi(_scanBarcode);
                         },
                         cursorColor: Colors.green,
