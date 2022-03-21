@@ -12,15 +12,18 @@ import 'package:gpsinstallation/models/traccerDataModel.dart';
 import 'package:gpsinstallation/models/truckDataModel.dart';
 import 'package:gpsinstallation/screens/powerCheckTwo.dart';
 import 'package:http/http.dart' as http;
+import 'package:simple_timer/simple_timer.dart';
+import 'package:flutter/scheduler.dart';
 
-class PowerCheckOne extends StatefulWidget {
-  const PowerCheckOne({Key? key}) : super(key: key);
+class PowerCheckTwo extends StatefulWidget {
+  const PowerCheckTwo({Key? key}) : super(key: key);
 
   @override
-  State<PowerCheckOne> createState() => _PowerCheckOneState();
+  State<PowerCheckTwo> createState() => _PowerCheckTwoState();
 }
 
-class _PowerCheckOneState extends State<PowerCheckOne> {
+class _PowerCheckTwoState extends State<PowerCheckTwo>
+    with SingleTickerProviderStateMixin {
   String traccarApi = FlutterConfig.get("traccarApi");
 
   String traccarUser = FlutterConfig.get("traccarUser");
@@ -32,6 +35,7 @@ class _PowerCheckOneState extends State<PowerCheckOne> {
   String deviceId = "Unknown";
   String ignitionStatus = "Unknown";
   bool successLoading = false;
+  late TimerController _timerController;
 
   Future<void> callApiGetDeviceId() async {
     String basicAuth =
@@ -40,10 +44,8 @@ class _PowerCheckOneState extends State<PowerCheckOne> {
     var response = await http
         .get(url, headers: <String, String>{'authorization': basicAuth});
     var body = response.body;
-    print("Called here as well" + body.toString());
     _truckDataModel = TruckDataModel.fromJson(jsonDecode(body));
     deviceId = _truckDataModel.id.toString();
-    print(deviceId + "DEVICE IIID");
     callApiGetStatus();
     setState(() {});
   }
@@ -74,8 +76,8 @@ class _PowerCheckOneState extends State<PowerCheckOne> {
 
   @override
   void initState() {
+    _timerController = TimerController(this);
     super.initState();
-    print("CALLED HERE");
     callApiGetDeviceId();
   }
 
@@ -106,7 +108,7 @@ class _PowerCheckOneState extends State<PowerCheckOne> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Power check 1',
+                    Text('Power check 2',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -143,7 +145,7 @@ class _PowerCheckOneState extends State<PowerCheckOne> {
                               style: TextStyle(
                                   fontFamily: "montserrat", fontSize: 14)),
                           TextSpan(
-                              text: ' OFF ',
+                              text: ' ON ',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontFamily: "montserrat")),
@@ -158,29 +160,83 @@ class _PowerCheckOneState extends State<PowerCheckOne> {
                     ),
                     Card(
                       child: Padding(
-                        padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              // ignore: prefer_const_literals_to_create_immutables
-                              children: [
-                                Text('Ignition status',
-                                    style: TextStyle(fontSize: 10)),
-                                getFieldText(1),
-                                const SizedBox(
-                                  height: 12,
-                                ),
-                                Text('Battery status',
-                                    style: TextStyle(fontSize: 10)),
-                                getFieldText(2),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
+                          padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    // ignore: prefer_const_literals_to_create_immutables
+                                    children: [
+                                      Text('Ignition status',
+                                          style: TextStyle(fontSize: 10)),
+                                      getFieldText(1),
+                                      const SizedBox(
+                                        height: 12,
+                                      ),
+                                      Text('Battery status',
+                                          style: TextStyle(fontSize: 10)),
+                                      getFieldText(2),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 16,
+                              ),
+                              (ignitionStatus != "On")
+                                  ? Padding(
+                                      padding: EdgeInsets.all(8),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text('Update ke liye ruke',
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  color: darkBlueColor)),
+                                          SizedBox(
+                                            width: 2,
+                                          ),
+                                          SizedBox(
+                                            height: 36,
+                                            child: SimpleTimer(
+                                              status: TimerStatus.start,
+                                              duration:
+                                                  const Duration(seconds: 15),
+                                              // controller: _timerController,
+                                              onEnd: () {
+                                                callApiGetDeviceId();
+                                                if (ignitionStatus != "On") {
+                                                  Navigator.of(context)
+                                                      .pushReplacement(
+                                                          _createRoute());
+                                                }
+                                              },
+                                              progressIndicatorColor:
+                                                  darkBlueColor,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    )
+                                  : Padding(
+                                      padding: EdgeInsets.all(8),
+                                      child: Text('Successfully Turned ON',
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              color: darkBlueColor)),
+                                    ),
+                              SizedBox(
+                                height: 16,
+                              ),
+                            ],
+                          )),
                       elevation: 4,
                       shape: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -189,6 +245,15 @@ class _PowerCheckOneState extends State<PowerCheckOne> {
                     getNavMenu(),
                   ],
                 ))));
+  }
+
+  Route _createRoute() {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => PowerCheckTwo(),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        return child;
+      },
+    );
   }
 
   Row getNavMenu() {
@@ -261,13 +326,25 @@ class _PowerCheckOneState extends State<PowerCheckOne> {
         ),
         if (textType == 1)
           Icon(
-              (successLoading)
+              (ignitionStatus == "On")
                   ? Icons.check_circle
                   : FontAwesomeIcons.exclamationCircle,
-              color: (successLoading) ? Colors.green : Colors.red,
+              color: (ignitionStatus == "On") ? Colors.green : Colors.red,
               size: 12),
+        SizedBox(
+          width: 2,
+        ),
         if (textType == 2)
           Icon(FontAwesomeIcons.exclamationCircle, color: Colors.red, size: 12),
+        // Icon(Icons.check_circle, color: Colors.green, size: 12),
+        SizedBox(
+          width: 2,
+        ),
+        if (textType == 1 && ignitionStatus != "On")
+          Text(
+            "Turn the ignition ON",
+            style: TextStyle(fontSize: 12, color: Colors.red),
+          ),
       ],
     );
   }
