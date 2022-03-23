@@ -40,6 +40,8 @@ dependencies:
   font_awesome_flutter: ^9.2.0
   image_picker: ^0.8.4+11
   simple_timer: ^2.0.0
+  firebase_auth: ^3.3.11
+  firebase_core: ^1.13.1
 
 dev_dependencies:
   flutter_test:

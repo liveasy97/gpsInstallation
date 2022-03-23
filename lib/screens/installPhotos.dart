@@ -61,7 +61,11 @@ class _InstallationPhotosState extends State<InstallationPhotos> {
 
   GestureDetector getCard(int cardId, String textHere) {
     return GestureDetector(
-      onTap: (() => {Get.to(ImagePickerScreen())}),
+      onTap: (() => {
+            Get.to(ImagePickerScreen(
+              cardId: cardId,
+            ))
+          }),
       child: Card(
         child: Padding(
           padding: EdgeInsets.fromLTRB(16, 20, 16, 20),
