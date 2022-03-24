@@ -119,6 +119,8 @@ class _imeiCheckState extends State<imeiCheck> {
                       height: 32,
                     ),
                     Flexible(
+                        child: Padding(
+                      padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
                       child: TextFormField(
                         controller: fieldText,
                         onChanged: (text) {
@@ -151,7 +153,7 @@ class _imeiCheckState extends State<imeiCheck> {
                           ),
                         ),
                       ),
-                    ),
+                    )),
                     const Text('Or', style: TextStyle(fontSize: 16)),
                     GestureDetector(
                       onTap: () => {scanBarcodeNormal()},
@@ -175,7 +177,7 @@ class _imeiCheckState extends State<imeiCheck> {
                     ),
                     Card(
                       child: Padding(
-                        padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
+                        padding: EdgeInsets.fromLTRB(32, 16, 32, 16),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [

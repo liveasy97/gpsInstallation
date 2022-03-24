@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:gpsinstallation/constants/color.dart';
+import 'package:gpsinstallation/main.dart';
 import 'package:gpsinstallation/screens/imagePickerScreen.dart';
 
 class InstallationPhotos extends StatefulWidget {
@@ -12,59 +13,89 @@ class InstallationPhotos extends StatefulWidget {
   State<InstallationPhotos> createState() => _InstallationPhotosState();
 }
 
-class _InstallationPhotosState extends State<InstallationPhotos> {
-  static List<bool> successUploading = [false, false, false];
+class _InstallationPhotosState extends State<InstallationPhotos>
+    with WidgetsBindingObserver {
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    switch (state) {
+      case AppLifecycleState.resumed:
+        // widget is resumed
+        setState(() {});
+        break;
+      case AppLifecycleState.inactive:
+        // widget is inactive
+        break;
+      case AppLifecycleState.paused:
+        // widget is paused
+        break;
+      case AppLifecycleState.detached:
+        // widget is detached
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Liveasy GPS Installer",
-          style: TextStyle(color: darkBlueColor, fontWeight: FontWeight.w700),
-        ),
-        elevation: 0,
-        backgroundColor: Color(0xFFF0F0F0),
-        automaticallyImplyLeading: true,
-        leading: IconButton(
-            icon: Image.asset(
-              "assets/icons/drawerIcon.png",
-              width: 24.0,
-              height: 24.0,
+    return WillPopScope(
+        onWillPop: () {
+          Get.to(MyHomePage(title: "Index"));
+          return Future.value(false);
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text(
+              "Liveasy GPS Installer",
+              style:
+                  TextStyle(color: darkBlueColor, fontWeight: FontWeight.w700),
             ),
-            // onPressed: () => Scaffold.of(context).openDrawer(),
-            onPressed: () => {}),
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(children: [
-          Text('Installation photos',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              )),
-          SizedBox(
-            height: 16,
+            elevation: 0,
+            backgroundColor: Color(0xFFF0F0F0),
+            automaticallyImplyLeading: true,
+            leading: IconButton(
+                icon: Image.asset(
+                  "assets/icons/drawerIcon.png",
+                  width: 24.0,
+                  height: 24.0,
+                ),
+                // onPressed: () => Scaffold.of(context).openDrawer(),
+                onPressed: () => {}),
           ),
-          getCard(0, "GPS ka photo upload \nkare"),
-          SizedBox(
-            height: 12,
+          body: Padding(
+            padding: EdgeInsets.all(16),
+            child: Column(children: [
+              Text('Installation photos',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  )),
+              SizedBox(
+                height: 16,
+              ),
+              getCard(0, "GPS ka photo upload \nkare"),
+              SizedBox(
+                height: 12,
+              ),
+              getCard(1, "Relay ka photo upload \nkare"),
+              SizedBox(
+                height: 12,
+              ),
+              getCard(2, "Truck ka samnse se photo \nupload kare"),
+            ]),
           ),
-          getCard(1, "Relay ka photo upload \nkare"),
-          SizedBox(
-            height: 12,
-          ),
-          getCard(2, "Truck ka samnse se photo \nupload kare"),
-        ]),
-      ),
-    );
+        ));
   }
 
   GestureDetector getCard(int cardId, String textHere) {
     return GestureDetector(
       onTap: (() => {
-            Get.to(ImagePickerScreen(
-              cardId: cardId,
-            ))
+            if (MyApp.successUploading[cardId] == false)
+              {
+                Get.to(ImagePickerScreen(
+                  cardId: cardId,
+                ))
+              }
           }),
       child: Card(
         child: Padding(
@@ -97,7 +128,7 @@ class _InstallationPhotosState extends State<InstallationPhotos> {
   }
 
   Icon getIcon(int cardId) {
-    return (successUploading[cardId])
+    return (MyApp.successUploading[cardId])
         ? Icon(Icons.check_circle, color: Colors.green)
         : Icon(Icons.keyboard_arrow_right, color: Colors.grey);
   }

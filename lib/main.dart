@@ -16,6 +16,8 @@ void main() async {
 class MyApp extends StatelessWidget {
   static String imei = "Unknown";
   static String phone = "Unknown";
+  static List<bool> successUploading = [false, false, false];
+
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(

@@ -105,52 +105,56 @@ class _ImagePickerScreenState extends State<ImagePickerScreen> {
                             _image = File(image.path);
                           });
                         },
-                        child: Card(
-                          color: Color(0xffEEEEEE),
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(16, 20, 16, 20),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  // ignore: prefer_const_literals_to_create_immutables
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsets.all(16),
-                                      child: _image == null
-                                          ? Image.asset(
-                                              'assets/icons/upload.png',
-                                              fit: BoxFit.contain,
-                                              height: height / 5,
-                                            )
-                                          : Image.file(
-                                              _image,
-                                              width: 200.0,
-                                              height: 200.0,
-                                              fit: BoxFit.fitHeight,
-                                            ),
-                                    ),
-                                    SizedBox(
-                                      height: 8,
-                                    ),
-                                    Text('Phone se upload\nkren',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.black54,
-                                            fontWeight: FontWeight.w500)),
-                                  ],
-                                ),
-                              ],
+                        child: Container(
+                          margin: EdgeInsets.fromLTRB(32, 0, 32, 0),
+                          child: Card(
+                            color: Color(0xffEEEEEE),
+                            child: Padding(
+                              padding: const EdgeInsets.all(32),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    // ignore: prefer_const_literals_to_create_immutables
+                                    children: [
+                                      Container(
+                                        margin: const EdgeInsets.all(16),
+                                        child: _image == null
+                                            ? Image.asset(
+                                                'assets/icons/upload.png',
+                                                fit: BoxFit.contain,
+                                                height: height / 11,
+                                              )
+                                            : Image.file(
+                                                _image,
+                                                width: 150.0,
+                                                height: 150.0,
+                                                fit: BoxFit.fitHeight,
+                                              ),
+                                      ),
+                                      SizedBox(
+                                        height: 8,
+                                      ),
+                                      Text('Phone se upload\nkren',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.black54,
+                                              fontWeight: FontWeight.w500)),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
+                            elevation: 4,
+                            shape: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(color: Colors.white)),
                           ),
-                          elevation: 4,
-                          shape: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Colors.white)),
                         ),
                       ),
                       SizedBox(
@@ -188,7 +192,7 @@ class _ImagePickerScreenState extends State<ImagePickerScreen> {
                             const SizedBox(
                               width: 8,
                             ),
-                            const Text('IMEI number scan kren',
+                            const Text('Camera se photo kheechen',
                                 style: TextStyle(fontSize: 14)),
                           ],
                         ),
@@ -221,19 +225,21 @@ class _ImagePickerScreenState extends State<ImagePickerScreen> {
                     RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         side: BorderSide(color: darkBlueColor))))),
-        Text('Step 1 of 7', style: const TextStyle(fontSize: 12)),
         ElevatedButton(
             onPressed: () => {
                   if (picked)
                     {
                       postHardwarePictures(
-                          picture: img64, documentType: documentType)
-                    }
+                          picture: img64,
+                          documentType: documentType,
+                          CardId: widget.cardId)
+                    },
+                  setState(() {})
                 },
             child: new Padding(
               padding: EdgeInsets.all(16.0),
               child: Text(
-                "Next",
+                "Done",
                 style: TextStyle(color: white),
               ),
             ),
