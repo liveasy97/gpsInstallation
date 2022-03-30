@@ -1,22 +1,29 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_config/flutter_config.dart';
 import 'package:get/get.dart';
 import 'package:gpsinstallation/screens/imeiCheck.dart';
 import 'package:gpsinstallation/screens/installPhotos.dart';
+import 'package:gpsinstallation/screens/locationCheck.dart';
+import 'package:gpsinstallation/screens/loginScreen.dart';
+import 'package:gpsinstallation/screens/onboarding.dart';
 import 'package:gpsinstallation/screens/powerCheckOne.dart';
 import 'package:gpsinstallation/screens/powerCheckTwo.dart';
 import 'package:gpsinstallation/screens/taskFetch.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Required by FlutterConfig
+  WidgetsFlutterBinding.ensureInitialized();
   await FlutterConfig.loadEnvVariables();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   static String imei = "Unknown";
   static String phone = "Unknown";
-  static List<bool> successUploading = [false, false, false];
+  static double latitude = 0;
+  static double longitude = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -24,20 +31,68 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
           fontFamily: "montserrat", scaffoldBackgroundColor: Colors.white),
       debugShowCheckedModeBanner: false,
-      home: MyHomePage(
-        title: "Index",
-      ),
+      home: (FirebaseAuth.instance.currentUser != null)
+          ? TaskFetcher()
+          : Onboarding(),
       getPages: [
         GetPage(
             name: '/',
             page: () => const MyHomePage(
                   title: "Index",
                 )),
-        GetPage(name: '/imeiCheck', page: () => const imeiCheck()),
-        GetPage(name: '/powerCheck1', page: () => const PowerCheckOne()),
-        GetPage(name: '/powerCheck2', page: () => const PowerCheckTwo()),
-        GetPage(name: '/installPhotos', page: () => const InstallationPhotos()),
+        GetPage(
+            name: '/imeiCheck',
+            page: () => imeiCheck(
+                  taskId: 0,
+                  driverName: '',
+                  driverPhoneNo: '',
+                  vehicleNo: '',
+                  vehicleOwnerName: '',
+                  vehicleOwnerPhoneNo: '',
+                )),
+        GetPage(
+            name: '/powerCheck1',
+            page: () => PowerCheckOne(
+                  taskId: 0,
+                  driverName: '',
+                  driverPhoneNo: '',
+                  vehicleNo: '',
+                  vehicleOwnerName: '',
+                  vehicleOwnerPhoneNo: '',
+                )),
+        GetPage(
+            name: '/powerCheck2',
+            page: () => PowerCheckTwo(
+                  taskId: 0,
+                  driverName: '',
+                  driverPhoneNo: '',
+                  vehicleNo: '',
+                  vehicleOwnerName: '',
+                  vehicleOwnerPhoneNo: '',
+                )),
+        GetPage(
+            name: '/installPhotos',
+            page: () => InstallationPhotos(
+                  taskId: 0,
+                  driverName: '',
+                  driverPhoneNo: '',
+                  vehicleNo: '',
+                  vehicleOwnerName: '',
+                  vehicleOwnerPhoneNo: '',
+                )),
         GetPage(name: '/installerTask', page: () => const TaskFetcher()),
+        GetPage(name: '/onboarding', page: () => const Onboarding()),
+        GetPage(name: '/loginscreen', page: () => Login()),
+        GetPage(
+            name: '/locationCheck',
+            page: () => LocationCheck(
+                  taskId: 0,
+                  driverName: '',
+                  driverPhoneNo: '',
+                  vehicleNo: '',
+                  vehicleOwnerName: '',
+                  vehicleOwnerPhoneNo: '',
+                )),
       ],
     );
   }
@@ -99,6 +154,30 @@ class _MyHomePageState extends State<MyHomePage> {
                   ElevatedButton(
                     onPressed: () => {Get.toNamed("/installerTask")},
                     child: const Text('Installer Tasks',
+                        style: TextStyle(color: Colors.white)),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  ElevatedButton(
+                    onPressed: () => {Get.toNamed("/onboarding")},
+                    child: const Text('Onboarding',
+                        style: TextStyle(color: Colors.white)),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  ElevatedButton(
+                    onPressed: () => {Get.toNamed("/loginscreen")},
+                    child: const Text('Login',
+                        style: TextStyle(color: Colors.white)),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  ElevatedButton(
+                    onPressed: () => {Get.toNamed("/locationCheck")},
+                    child: const Text('Check Location',
                         style: TextStyle(color: Colors.white)),
                   )
                 ],

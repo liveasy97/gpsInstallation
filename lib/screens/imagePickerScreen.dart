@@ -14,8 +14,20 @@ import 'dart:io' as Io;
 
 class ImagePickerScreen extends StatefulWidget {
   int cardId;
+  int taskId;
+  String vehicleNo;
+  String driverName;
+  String driverPhoneNo;
+  String vehicleOwnerName;
+  String vehicleOwnerPhoneNo;
   ImagePickerScreen({
     required this.cardId,
+    required this.taskId,
+    required this.vehicleNo,
+    required this.driverName,
+    required this.driverPhoneNo,
+    required this.vehicleOwnerName,
+    required this.vehicleOwnerPhoneNo,
   });
   @override
   State<ImagePickerScreen> createState() => _ImagePickerScreenState();
@@ -199,7 +211,10 @@ class _ImagePickerScreenState extends State<ImagePickerScreen> {
                       ),
                     ],
                   ),
-                  getNavMenu()
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(0, 0, 0, 8),
+                    child: getNavMenu(),
+                  )
                 ]),
           ),
         ));
@@ -223,16 +238,24 @@ class _ImagePickerScreenState extends State<ImagePickerScreen> {
                 shadowColor: MaterialStateProperty.all<Color>(Colors.white),
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(12.0),
                         side: BorderSide(color: darkBlueColor))))),
+        Text('', style: const TextStyle(fontSize: 12)),
         ElevatedButton(
             onPressed: () => {
                   if (picked)
                     {
                       postHardwarePictures(
-                          picture: img64,
-                          documentType: documentType,
-                          CardId: widget.cardId)
+                        picture: img64,
+                        documentType: documentType,
+                        CardId: widget.cardId,
+                        taskId: widget.taskId,
+                        driverName: widget.driverName,
+                        driverPhoneNo: widget.driverPhoneNo,
+                        vehicleNo: widget.vehicleNo,
+                        vehicleOwnerName: widget.vehicleOwnerName,
+                        vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
+                      )
                     },
                   setState(() {})
                 },
@@ -250,7 +273,7 @@ class _ImagePickerScreenState extends State<ImagePickerScreen> {
                 shadowColor: MaterialStateProperty.all<Color>(Colors.white),
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(12.0),
                         side: (picked)
                             ? BorderSide(color: darkBlueColor)
                             : BorderSide(color: grey))))),

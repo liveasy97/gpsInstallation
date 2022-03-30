@@ -5,9 +5,25 @@ import 'package:get/get.dart';
 import 'package:gpsinstallation/constants/color.dart';
 import 'package:gpsinstallation/main.dart';
 import 'package:gpsinstallation/screens/imagePickerScreen.dart';
+import 'package:gpsinstallation/screens/stepsView.dart';
+import 'package:gpsinstallation/screens/taskFetch.dart';
 
 class InstallationPhotos extends StatefulWidget {
-  const InstallationPhotos({Key? key}) : super(key: key);
+  int taskId;
+  String vehicleNo;
+  String driverName;
+  String driverPhoneNo;
+  String vehicleOwnerName;
+  String vehicleOwnerPhoneNo;
+  InstallationPhotos(
+      {required this.vehicleNo,
+      required this.driverName,
+      required this.driverPhoneNo,
+      required this.vehicleOwnerName,
+      required this.vehicleOwnerPhoneNo,
+      required this.taskId});
+
+  static List<bool> successUploading = [false, false, false];
 
   @override
   State<InstallationPhotos> createState() => _InstallationPhotosState();
@@ -36,11 +52,34 @@ class _InstallationPhotosState extends State<InstallationPhotos>
     }
   }
 
+  void initState() {
+    if (InstallationPhotos.successUploading[0] &&
+        InstallationPhotos.successUploading[1] &&
+        InstallationPhotos.successUploading[2]) {
+      TaskFetcher.dataForEachTask[widget.taskId].imeiStatus = 2;
+      TaskFetcher.dataForEachTask[widget.taskId].connectivityStatus = 2;
+      TaskFetcher.dataForEachTask[widget.taskId].powerOneStatus = 2;
+      TaskFetcher.dataForEachTask[widget.taskId].powerTwoStatus = 2;
+      TaskFetcher.dataForEachTask[widget.taskId].locationStatus = 2;
+      TaskFetcher.dataForEachTask[widget.taskId].relayStatus = 2;
+      TaskFetcher.dataForEachTask[widget.taskId].photosStatus = 2;
+      TaskFetcher.dataForEachTask[widget.taskId].completeStatus = true;
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () {
-          Get.to(MyHomePage(title: "Index"));
+          Get.to(StepsView(
+            taskId: widget.taskId,
+            driverName: widget.driverName,
+            driverPhoneNo: widget.driverPhoneNo,
+            vehicleNo: widget.vehicleNo,
+            vehicleOwnerName: widget.vehicleOwnerName,
+            vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
+          ));
           return Future.value(false);
         },
         child: Scaffold(
@@ -90,9 +129,15 @@ class _InstallationPhotosState extends State<InstallationPhotos>
   GestureDetector getCard(int cardId, String textHere) {
     return GestureDetector(
       onTap: (() => {
-            if (MyApp.successUploading[cardId] == false)
+            if (InstallationPhotos.successUploading[cardId] == false)
               {
                 Get.to(ImagePickerScreen(
+                  taskId: widget.taskId,
+                  driverName: widget.driverName,
+                  driverPhoneNo: widget.driverPhoneNo,
+                  vehicleNo: widget.vehicleNo,
+                  vehicleOwnerName: widget.vehicleOwnerName,
+                  vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
                   cardId: cardId,
                 ))
               }
@@ -128,7 +173,7 @@ class _InstallationPhotosState extends State<InstallationPhotos>
   }
 
   Icon getIcon(int cardId) {
-    return (MyApp.successUploading[cardId])
+    return (InstallationPhotos.successUploading[cardId])
         ? Icon(Icons.check_circle, color: Colors.green)
         : Icon(Icons.keyboard_arrow_right, color: Colors.grey);
   }

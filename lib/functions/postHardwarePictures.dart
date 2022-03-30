@@ -5,8 +5,17 @@ import 'package:gpsinstallation/screens/installPhotos.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_config/flutter_config.dart';
 
-Future<String> postHardwarePictures(
-    {String? picture, String? documentType, int CardId = 3}) async {
+Future<String> postHardwarePictures({
+  String? picture,
+  String? documentType,
+  int CardId = 3,
+  int taskId = 0,
+  required String vehicleNo,
+  required String driverName,
+  required String driverPhoneNo,
+  required String vehicleOwnerName,
+  required String vehicleOwnerPhoneNo,
+}) async {
   try {
     final String documentApiUrl =
         FlutterConfig.get("documentApiUrl").toString();
@@ -33,8 +42,15 @@ Future<String> postHardwarePictures(
       if (response.statusCode == 200 || response.statusCode == 201) {
         print(response.body);
         print("Success PUT");
-        Get.to(InstallationPhotos());
-        MyApp.successUploading[CardId] = true;
+        Get.to(InstallationPhotos(
+          taskId: taskId,
+          driverName: driverName,
+          driverPhoneNo: driverPhoneNo,
+          vehicleNo: vehicleNo,
+          vehicleOwnerName: vehicleOwnerName,
+          vehicleOwnerPhoneNo: vehicleOwnerPhoneNo,
+        ));
+        InstallationPhotos.successUploading[CardId] = true;
         return "Success";
       } else {
         print("Failed");
@@ -49,8 +65,15 @@ Future<String> postHardwarePictures(
       if (response.statusCode == 200 || response.statusCode == 201) {
         print(response.body);
         print("Success");
-        MyApp.successUploading[CardId] = true;
-        Get.to(InstallationPhotos());
+        InstallationPhotos.successUploading[CardId] = true;
+        Get.to(InstallationPhotos(
+          taskId: taskId,
+          driverName: driverName,
+          driverPhoneNo: driverPhoneNo,
+          vehicleNo: vehicleNo,
+          vehicleOwnerName: vehicleOwnerName,
+          vehicleOwnerPhoneNo: vehicleOwnerPhoneNo,
+        ));
         return "Success";
       } else {
         print("Failed");

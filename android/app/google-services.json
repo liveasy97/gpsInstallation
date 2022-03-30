@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "980451987113",
+    "project_id": "gpsinstallation-854a0",
+    "storage_bucket": "gpsinstallation-854a0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:980451987113:android:a915d95ed93589d83b23b8",
+        "android_client_info": {
+          "package_name": "com.example.gpsinstallation"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "980451987113-ug8o6dkm3guk4ughl3m6sigk3svjpmdi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvbRl2Y6uP0Ku0kjpTJHfCujKMBKeFB2w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "980451987113-ug8o6dkm3guk4ughl3m6sigk3svjpmdi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
