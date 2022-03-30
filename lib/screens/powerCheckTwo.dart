@@ -11,12 +11,26 @@ import 'package:gpsinstallation/main.dart';
 import 'package:gpsinstallation/models/traccerDataModel.dart';
 import 'package:gpsinstallation/models/truckDataModel.dart';
 import 'package:gpsinstallation/screens/powerCheckTwo.dart';
+import 'package:gpsinstallation/screens/stepsView.dart';
+import 'package:gpsinstallation/screens/taskFetch.dart';
 import 'package:http/http.dart' as http;
 import 'package:simple_timer/simple_timer.dart';
 import 'package:flutter/scheduler.dart';
 
 class PowerCheckTwo extends StatefulWidget {
-  const PowerCheckTwo({Key? key}) : super(key: key);
+  int taskId;
+  String vehicleNo;
+  String driverName;
+  String driverPhoneNo;
+  String vehicleOwnerName;
+  String vehicleOwnerPhoneNo;
+  PowerCheckTwo(
+      {required this.vehicleNo,
+      required this.driverName,
+      required this.driverPhoneNo,
+      required this.vehicleOwnerName,
+      required this.vehicleOwnerPhoneNo,
+      required this.taskId});
 
   @override
   State<PowerCheckTwo> createState() => _PowerCheckTwoState();
@@ -65,6 +79,14 @@ class _PowerCheckTwoState extends State<PowerCheckTwo>
     print("IGNITION STATUS IS" +
         _traccarDataModel[0].attributes!.ignition!.toString());
     successLoading = true;
+
+    //Only when ignitionStatus is On, this is for debugging
+    TaskFetcher.dataForEachTask[widget.taskId].imeiStatus = 2;
+    TaskFetcher.dataForEachTask[widget.taskId].connectivityStatus = 2;
+    TaskFetcher.dataForEachTask[widget.taskId].powerOneStatus = 2;
+    TaskFetcher.dataForEachTask[widget.taskId].powerTwoStatus = 2;
+    TaskFetcher.dataForEachTask[widget.taskId].locationStatus = 1;
+
     if (_traccarDataModel[0].attributes!.ignition!) {
       ignitionStatus = "On";
       setState(() {});
@@ -84,172 +106,196 @@ class _PowerCheckTwoState extends State<PowerCheckTwo>
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            "Liveasy GPS Installer",
-            style: TextStyle(color: darkBlueColor, fontWeight: FontWeight.w700),
+    return WillPopScope(
+      child: Scaffold(
+          appBar: AppBar(
+            title: const Text(
+              "Liveasy GPS Installer",
+              style:
+                  TextStyle(color: darkBlueColor, fontWeight: FontWeight.w700),
+            ),
+            elevation: 0,
+            backgroundColor: Color(0xFFF0F0F0),
+            automaticallyImplyLeading: true,
+            leading: IconButton(
+                icon: Image.asset(
+                  "assets/icons/drawerIcon.png",
+                  width: 24.0,
+                  height: 24.0,
+                ),
+                // onPressed: () => Scaffold.of(context).openDrawer(),
+                onPressed: () => {}),
           ),
-          elevation: 0,
-          backgroundColor: Color(0xFFF0F0F0),
-          automaticallyImplyLeading: true,
-          leading: IconButton(
-              icon: Image.asset(
-                "assets/icons/drawerIcon.png",
-                width: 24.0,
-                height: 24.0,
-              ),
-              // onPressed: () => Scaffold.of(context).openDrawer(),
-              onPressed: () => {}),
-        ),
-        body: Center(
-            child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Power check 2',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        )),
-                    const SizedBox(
-                      height: 32,
-                    ),
-                    Image.asset(
-                      'assets/icons/ignitioncheck.png',
-                      fit: BoxFit.contain,
-                      height: height / 6,
-                    ),
-                    const SizedBox(
-                      height: 32,
-                    ),
-                    Flexible(
-                        child: RichText(
-                      text: const TextSpan(
-                        // Note: Styles for TextSpans must be explicitly defined.
-                        // Child text spans will inherit styles from parent
-                        style: TextStyle(
-                          fontSize: 14.0,
-                          color: Colors.black,
-                        ),
-                        children: <TextSpan>[
-                          TextSpan(
-                              text: 'Task: ',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF152968),
-                                  fontFamily: "montserrat")),
-                          TextSpan(
-                              text: "Ignition",
-                              style: TextStyle(
-                                  fontFamily: "montserrat", fontSize: 14)),
-                          TextSpan(
-                              text: ' ON ',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: "montserrat")),
-                          TextSpan(
-                              text: "Kren",
-                              style: TextStyle(fontFamily: "montserrat"))
-                        ],
-                      ),
-                    )),
-                    const SizedBox(
-                      height: 32,
-                    ),
-                    Card(
-                      child: Padding(
-                          padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    // ignore: prefer_const_literals_to_create_immutables
-                                    children: [
-                                      Text('Ignition status',
-                                          style: TextStyle(fontSize: 10)),
-                                      getFieldText(1),
-                                      const SizedBox(
-                                        height: 12,
-                                      ),
-                                      Text('Battery status',
-                                          style: TextStyle(fontSize: 10)),
-                                      getFieldText(2),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 16,
-                              ),
-                              (ignitionStatus != "On")
-                                  ? Padding(
-                                      padding: EdgeInsets.all(8),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text('Update ke liye ruke',
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: darkBlueColor)),
-                                          SizedBox(
-                                            width: 2,
-                                          ),
-                                          SizedBox(
-                                            height: 36,
-                                            child: SimpleTimer(
-                                              status: TimerStatus.start,
-                                              duration:
-                                                  const Duration(seconds: 15),
-                                              // controller: _timerController,
-                                              onEnd: () {
-                                                callApiGetDeviceId();
-                                                if (ignitionStatus != "On") {
-                                                  Navigator.of(context)
-                                                      .pushReplacement(
-                                                          _createRoute());
-                                                }
-                                              },
-                                              progressIndicatorColor:
-                                                  darkBlueColor,
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    )
-                                  : Padding(
-                                      padding: EdgeInsets.all(8),
-                                      child: Text('Successfully Turned ON',
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              color: darkBlueColor)),
-                                    ),
-                              SizedBox(
-                                height: 16,
-                              ),
-                            ],
+          body: Center(
+              child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Power check 2',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                           )),
-                      elevation: 4,
-                      shape: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: Colors.white)),
-                    ),
-                    getNavMenu(),
-                  ],
-                ))));
+                      const SizedBox(
+                        height: 32,
+                      ),
+                      Image.asset(
+                        'assets/icons/ignitioncheck.png',
+                        fit: BoxFit.contain,
+                        height: height / 6,
+                      ),
+                      const SizedBox(
+                        height: 32,
+                      ),
+                      Flexible(
+                          child: RichText(
+                        text: const TextSpan(
+                          // Note: Styles for TextSpans must be explicitly defined.
+                          // Child text spans will inherit styles from parent
+                          style: TextStyle(
+                            fontSize: 14.0,
+                            color: Colors.black,
+                          ),
+                          children: <TextSpan>[
+                            TextSpan(
+                                text: 'Task: ',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF152968),
+                                    fontFamily: "montserrat")),
+                            TextSpan(
+                                text: "Ignition",
+                                style: TextStyle(
+                                    fontFamily: "montserrat", fontSize: 14)),
+                            TextSpan(
+                                text: ' ON ',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: "montserrat")),
+                            TextSpan(
+                                text: "Kren",
+                                style: TextStyle(fontFamily: "montserrat"))
+                          ],
+                        ),
+                      )),
+                      const SizedBox(
+                        height: 32,
+                      ),
+                      Card(
+                        child: Padding(
+                            padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      // ignore: prefer_const_literals_to_create_immutables
+                                      children: [
+                                        Text('Ignition status',
+                                            style: TextStyle(fontSize: 10)),
+                                        getFieldText(1),
+                                        const SizedBox(
+                                          height: 12,
+                                        ),
+                                        Text('Battery status',
+                                            style: TextStyle(fontSize: 10)),
+                                        getFieldText(2),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 16,
+                                ),
+                                (ignitionStatus != "On")
+                                    ? Padding(
+                                        padding: EdgeInsets.all(8),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text('Update ke liye ruke',
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    color: darkBlueColor)),
+                                            SizedBox(
+                                              width: 2,
+                                            ),
+                                            SizedBox(
+                                              height: 36,
+                                              child: SimpleTimer(
+                                                status: TimerStatus.start,
+                                                duration:
+                                                    const Duration(seconds: 15),
+                                                // controller: _timerController,
+                                                onEnd: () {
+                                                  callApiGetDeviceId();
+                                                  if (ignitionStatus != "On") {
+                                                    Navigator.of(context)
+                                                        .pushReplacement(
+                                                            _createRoute());
+                                                  }
+                                                },
+                                                progressIndicatorColor:
+                                                    darkBlueColor,
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      )
+                                    : Padding(
+                                        padding: EdgeInsets.all(8),
+                                        child: Text('Successfully Turned ON',
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                color: darkBlueColor)),
+                                      ),
+                                SizedBox(
+                                  height: 16,
+                                ),
+                              ],
+                            )),
+                        elevation: 4,
+                        shape: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(color: Colors.white)),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(0, 0, 0, 8),
+                        child: getNavMenu(),
+                      )
+                    ],
+                  )))),
+      onWillPop: () {
+        Get.to(StepsView(
+          taskId: widget.taskId,
+          driverName: widget.driverName,
+          driverPhoneNo: widget.driverPhoneNo,
+          vehicleNo: widget.vehicleNo,
+          vehicleOwnerName: widget.vehicleOwnerName,
+          vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
+        ));
+        return Future.value(true); // if true allow back else block it
+      },
+    );
   }
 
   Route _createRoute() {
     return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => PowerCheckTwo(),
+      pageBuilder: (context, animation, secondaryAnimation) => PowerCheckTwo(
+        taskId: widget.taskId,
+        driverName: widget.driverName,
+        driverPhoneNo: widget.driverPhoneNo,
+        vehicleNo: widget.vehicleNo,
+        vehicleOwnerName: widget.vehicleOwnerName,
+        vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
+      ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         return child;
       },
@@ -274,12 +320,22 @@ class _PowerCheckTwoState extends State<PowerCheckTwo>
                 shadowColor: MaterialStateProperty.all<Color>(Colors.white),
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(12.0),
                         side: BorderSide(color: darkBlueColor))))),
         Text('Step 2 of 7', style: const TextStyle(fontSize: 12)),
         ElevatedButton(
             onPressed: () => {
-                  if (successLoading) {Get.to(PowerCheckTwo())}
+                  if (successLoading)
+                    {
+                      Get.to(PowerCheckTwo(
+                        taskId: widget.taskId,
+                        driverName: widget.driverName,
+                        driverPhoneNo: widget.driverPhoneNo,
+                        vehicleNo: widget.vehicleNo,
+                        vehicleOwnerName: widget.vehicleOwnerName,
+                        vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
+                      ))
+                    }
                 },
             child: new Padding(
               padding: EdgeInsets.all(16.0),
@@ -295,7 +351,7 @@ class _PowerCheckTwoState extends State<PowerCheckTwo>
                 shadowColor: MaterialStateProperty.all<Color>(Colors.white),
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(12.0),
                         side: (successLoading)
                             ? BorderSide(color: darkBlueColor)
                             : BorderSide(color: grey))))),
