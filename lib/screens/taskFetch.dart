@@ -86,95 +86,102 @@ class _TaskFetcherState extends State<TaskFetcher> {
                 )),
             Container(
               child: (successLoading)
-                  ? ListView.builder(
-                      shrinkWrap: true,
-                      physics: BouncingScrollPhysics(
-                          parent: AlwaysScrollableScrollPhysics()),
-                      scrollDirection: Axis.vertical,
-                      itemCount: (_installerTaskListModel[0] != null)
-                          ? _installerTaskListModel.length
-                          : 0,
-                      itemBuilder: (context, index) {
-                        InstallerTaskModel here =
-                            _installerTaskListModel[index];
-                        print("DISTANCE ABCD " + here.driverName.toString());
-                        return Padding(
-                            padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
-                            child: GestureDetector(
-                              onTap: () => {
-                                Get.to(StepsView(
-                                  driverName: here.driverName.toString(),
-                                  driverPhoneNo: here.driverPhoneNo.toString(),
-                                  vehicleNo: here.vehicleNo.toString(),
-                                  vehicleOwnerName:
-                                      here.vehicleOwnerName.toString(),
-                                  vehicleOwnerPhoneNo:
-                                      here.vehicleOwnerPhoneNo.toString(),
-                                  taskId: index,
-                                ))
-                              },
-                              child: Card(
-                                child: Padding(
-                                  padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
-                                  child: Table(
-                                    columnWidths: {
-                                      0: FlexColumnWidth(4),
-                                      1: FlexColumnWidth(1),
-                                      2: FlexColumnWidth(4),
-                                    },
-                                    children: [
-                                      getTableRow("Vehicle No. : ",
-                                          here.vehicleNo.toString()),
-                                      getTableRow("Driver Name : ",
-                                          here.driverName.toString()),
-                                      getTableRow("Driver’s No. : ",
-                                          here.driverPhoneNo.toString()),
-                                      getTableRow("Owner’s Name : ",
-                                          here.vehicleOwnerName.toString()),
-                                      getTableRow("Owner’s No. : ",
-                                          here.vehicleOwnerPhoneNo.toString()),
-                                      TableRow(children: [
-                                        Text(
-                                          "",
-                                          style: TextStyle(fontSize: 15.0),
-                                        ),
-                                        Text(
-                                          "",
-                                          style: TextStyle(fontSize: 15.0),
-                                        ),
-                                        Padding(
-                                          padding:
-                                              EdgeInsets.fromLTRB(0, 8, 0, 0),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            // ignore: prefer_const_literals_to_create_immutables
-                                            children: [
-                                              Text(
-                                                "Install Kren",
-                                                style: TextStyle(
-                                                    fontSize: 16.0,
-                                                    color: darkBlueColor,
-                                                    fontWeight:
-                                                        FontWeight.bold),
+                  ? RefreshIndicator(
+                      child: ListView.builder(
+                          shrinkWrap: true,
+                          physics: BouncingScrollPhysics(
+                              parent: AlwaysScrollableScrollPhysics()),
+                          scrollDirection: Axis.vertical,
+                          itemCount: (_installerTaskListModel[0] != null)
+                              ? _installerTaskListModel.length
+                              : 0,
+                          itemBuilder: (context, index) {
+                            InstallerTaskModel here =
+                                _installerTaskListModel[index];
+                            print(
+                                "DISTANCE ABCD " + here.driverName.toString());
+                            return Padding(
+                                padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
+                                child: GestureDetector(
+                                  onTap: () => {
+                                    Get.to(StepsView(
+                                      driverName: here.driverName.toString(),
+                                      driverPhoneNo:
+                                          here.driverPhoneNo.toString(),
+                                      vehicleNo: here.vehicleNo.toString(),
+                                      vehicleOwnerName:
+                                          here.vehicleOwnerName.toString(),
+                                      vehicleOwnerPhoneNo:
+                                          here.vehicleOwnerPhoneNo.toString(),
+                                      taskId: index,
+                                    ))
+                                  },
+                                  child: Card(
+                                    child: Padding(
+                                      padding:
+                                          EdgeInsets.fromLTRB(16, 16, 16, 16),
+                                      child: Table(
+                                        columnWidths: {
+                                          0: FlexColumnWidth(4),
+                                          1: FlexColumnWidth(1),
+                                          2: FlexColumnWidth(4),
+                                        },
+                                        children: [
+                                          getTableRow("Vehicle No. : ",
+                                              here.vehicleNo.toString()),
+                                          getTableRow("Driver Name : ",
+                                              here.driverName.toString()),
+                                          getTableRow("Driver’s No. : ",
+                                              here.driverPhoneNo.toString()),
+                                          getTableRow("Owner’s Name : ",
+                                              here.vehicleOwnerName.toString()),
+                                          getTableRow(
+                                              "Owner’s No. : ",
+                                              here.vehicleOwnerPhoneNo
+                                                  .toString()),
+                                          TableRow(children: [
+                                            Text(
+                                              "",
+                                              style: TextStyle(fontSize: 15.0),
+                                            ),
+                                            Text(
+                                              "",
+                                              style: TextStyle(fontSize: 15.0),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.fromLTRB(
+                                                  0, 8, 0, 0),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                // ignore: prefer_const_literals_to_create_immutables
+                                                children: [
+                                                  Text(
+                                                    "Install Kren",
+                                                    style: TextStyle(
+                                                        fontSize: 16.0,
+                                                        color: darkBlueColor,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  Icon(Icons.arrow_right_sharp,
+                                                      color: darkBlueColor,
+                                                      size: 24),
+                                                ],
                                               ),
-                                              Icon(Icons.arrow_right_sharp,
-                                                  color: darkBlueColor,
-                                                  size: 24),
-                                            ],
-                                          ),
-                                        )
-                                      ])
-                                    ],
+                                            )
+                                          ])
+                                        ],
+                                      ),
+                                    ),
+                                    elevation: 4,
+                                    shape: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide:
+                                            BorderSide(color: Colors.white)),
                                   ),
-                                ),
-                                elevation: 4,
-                                shape: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide:
-                                        BorderSide(color: Colors.white)),
-                              ),
-                            ));
-                      })
+                                ));
+                          }),
+                      onRefresh: callApi)
                   : Container(),
             ),
           ],

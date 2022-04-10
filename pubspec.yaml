@@ -44,7 +44,9 @@ dependencies:
   firebase_core: ^1.13.1
   smooth_page_indicator: ^1.0.0+2
   geocode: ^1.0.1
-  google_geocoding: ^0.2.0
+  get_storage: ^2.0.3
+  shared_preferences: ^2.0.13
+  geocoding: ^2.0.4
   
 
 dev_dependencies:

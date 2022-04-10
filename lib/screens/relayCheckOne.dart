@@ -10,7 +10,7 @@ import 'package:gpsinstallation/constants/color.dart';
 import 'package:gpsinstallation/main.dart';
 import 'package:gpsinstallation/models/traccerDataModel.dart';
 import 'package:gpsinstallation/models/truckDataModel.dart';
-import 'package:gpsinstallation/screens/powerCheckTwo.dart';
+import 'package:gpsinstallation/screens/relayCheckTwo.dart';
 import 'package:gpsinstallation/screens/stepsView.dart';
 import 'package:gpsinstallation/screens/taskFetch.dart';
 import 'package:http/http.dart' as http;
@@ -18,14 +18,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_timer/simple_timer.dart';
 import 'package:flutter/scheduler.dart';
 
-class PowerCheckTwo extends StatefulWidget {
+class RelayCheckOne extends StatefulWidget {
   int taskId;
   String vehicleNo;
   String driverName;
   String driverPhoneNo;
   String vehicleOwnerName;
   String vehicleOwnerPhoneNo;
-  PowerCheckTwo(
+  RelayCheckOne(
       {required this.vehicleNo,
       required this.driverName,
       required this.driverPhoneNo,
@@ -34,10 +34,10 @@ class PowerCheckTwo extends StatefulWidget {
       required this.taskId});
 
   @override
-  State<PowerCheckTwo> createState() => _PowerCheckTwoState();
+  State<RelayCheckOne> createState() => _RelayCheckOneState();
 }
 
-class _PowerCheckTwoState extends State<PowerCheckTwo>
+class _RelayCheckOneState extends State<RelayCheckOne>
     with SingleTickerProviderStateMixin {
   String traccarApi = FlutterConfig.get("traccarApi");
 
@@ -83,15 +83,16 @@ class _PowerCheckTwoState extends State<PowerCheckTwo>
         _traccarDataModel[0].attributes!.ignition!.toString());
     successLoading = true;
 
-    //Only when ignitionStatus is On, this is for debugging
-    TaskFetcher.dataForEachTask[widget.taskId].powerTwoStatus = 2;
-    await prefs.setInt(widget.vehicleNo.toString() + '_3', 2);
-
-    TaskFetcher.dataForEachTask[widget.taskId].locationStatus = 1;
-    await prefs.setInt(widget.vehicleNo.toString() + '_4', 1);
-
     if (_traccarDataModel[0].attributes!.ignition!) {
       ignitionStatus = "On";
+
+      //Only when ignitionStatus is On, this is for debugging
+      TaskFetcher.dataForEachTask[widget.taskId].relayStatusOne = 2;
+      await prefs.setInt(widget.vehicleNo.toString() + '_5', 2);
+
+      TaskFetcher.dataForEachTask[widget.taskId].relayStatusTwo = 1;
+      await prefs.setInt(widget.vehicleNo.toString() + '_6', 1);
+
       setState(() {});
     } else {
       ignitionStatus = "Off";
@@ -135,7 +136,7 @@ class _PowerCheckTwoState extends State<PowerCheckTwo>
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Power check 2',
+                      Text('Relay Check 1',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -151,37 +152,10 @@ class _PowerCheckTwoState extends State<PowerCheckTwo>
                       const SizedBox(
                         height: 32,
                       ),
-                      Flexible(
-                          child: RichText(
-                        text: const TextSpan(
-                          // Note: Styles for TextSpans must be explicitly defined.
-                          // Child text spans will inherit styles from parent
+                      Text("Checking Relay - Cutting off the fuel supply",
                           style: TextStyle(
-                            fontSize: 14.0,
-                            color: Colors.black,
-                          ),
-                          children: <TextSpan>[
-                            TextSpan(
-                                text: 'Task: ',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF152968),
-                                    fontFamily: "montserrat")),
-                            TextSpan(
-                                text: "Ignition",
-                                style: TextStyle(
-                                    fontFamily: "montserrat", fontSize: 14)),
-                            TextSpan(
-                                text: ' ON ',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: "montserrat")),
-                            TextSpan(
-                                text: "Kren",
-                                style: TextStyle(fontFamily: "montserrat"))
-                          ],
-                        ),
-                      )),
+                              fontWeight: FontWeight.bold,
+                              fontFamily: "montserrat")),
                       const SizedBox(
                         height: 32,
                       ),
@@ -200,15 +174,12 @@ class _PowerCheckTwoState extends State<PowerCheckTwo>
                                           CrossAxisAlignment.start,
                                       // ignore: prefer_const_literals_to_create_immutables
                                       children: [
-                                        Text('Ignition status',
+                                        Text('Status',
                                             style: TextStyle(fontSize: 10)),
                                         getFieldText(1),
                                         const SizedBox(
                                           height: 12,
                                         ),
-                                        Text('Battery status',
-                                            style: TextStyle(fontSize: 10)),
-                                        getFieldText(2),
                                       ],
                                     ),
                                   ],
@@ -291,7 +262,7 @@ class _PowerCheckTwoState extends State<PowerCheckTwo>
 
   Route _createRoute() {
     return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => PowerCheckTwo(
+      pageBuilder: (context, animation, secondaryAnimation) => RelayCheckTwo(
         taskId: widget.taskId,
         driverName: widget.driverName,
         driverPhoneNo: widget.driverPhoneNo,
@@ -330,7 +301,7 @@ class _PowerCheckTwoState extends State<PowerCheckTwo>
             onPressed: () => {
                   if (successLoading)
                     {
-                      Get.to(PowerCheckTwo(
+                      Get.to(RelayCheckTwo(
                         taskId: widget.taskId,
                         driverName: widget.driverName,
                         driverPhoneNo: widget.driverPhoneNo,

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_config/flutter_config.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geocode/geocode.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
-import 'package:google_geocoding/google_geocoding.dart';
 import 'package:gpsinstallation/constants/color.dart';
 import 'package:gpsinstallation/main.dart';
 import 'package:gpsinstallation/screens/stepsView.dart';
 import 'package:gpsinstallation/screens/taskFetch.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LocationCheck extends StatefulWidget {
   int taskId;
@@ -31,36 +33,44 @@ class _LocationCheckState extends State<LocationCheck> {
   bool successLoading = false;
   String _vicinity = "Unknown";
   String warningText = "Loding, please wait!";
-  List<GeocodingResult> reverseGeocodingResults = [];
-  Future<void> _getAddress(double lat, double lang) async {
-    var googleGeocoding =
-        GoogleGeocoding("AIzaSyCPU872xIfRhjvtdLViTDbj0EnIBuxlcSs");
-    var response =
-        await googleGeocoding.geocoding.getReverse(LatLon(lat, lang));
-    if (response != null && response.results != null) {
-      if (mounted) {
-        setState(() {
-          reverseGeocodingResults = response.results!;
-          _vicinity = reverseGeocodingResults[0].formattedAddress!;
-          successLoading = true;
-          TaskFetcher.dataForEachTask[widget.taskId].imeiStatus = 2;
-          TaskFetcher.dataForEachTask[widget.taskId].connectivityStatus = 2;
-          TaskFetcher.dataForEachTask[widget.taskId].powerOneStatus = 2;
-          TaskFetcher.dataForEachTask[widget.taskId].powerTwoStatus = 2;
-          TaskFetcher.dataForEachTask[widget.taskId].locationStatus = 2;
-          TaskFetcher.dataForEachTask[widget.taskId].relayStatus = 2;
-          TaskFetcher.dataForEachTask[widget.taskId].photosStatus = 1;
+  String mapsKey = FlutterConfig.get("mapKey");
 
-          print(_vicinity);
-        });
-      }
-    } else {
-      if (mounted) {
-        setState(() {
-          reverseGeocodingResults = [];
-        });
-      }
-    }
+  Future<void> _getAddress(double lat, double lang) async {
+    final prefs = await SharedPreferences.getInstance();
+    print("COORDINATES ARE : " + lat.toString() + ' ' + lang.toString());
+    print("Doing");
+    List<Placemark> placemarks = await placemarkFromCoordinates(lat, lang);
+    print("locationFromAddress:" +
+        placemarks[0].street.toString() +
+        ',' +
+        placemarks[0].name.toString() +
+        ',' +
+        placemarks[0].locality.toString() +
+        ',' +
+        placemarks[0].administrativeArea.toString() +
+        ',' +
+        placemarks[0].postalCode.toString());
+
+    setState(() {
+      _vicinity = placemarks[0].street.toString() +
+          ',' +
+          placemarks[0].name.toString() +
+          ',' +
+          placemarks[0].locality.toString() +
+          ',' +
+          placemarks[0].administrativeArea.toString() +
+          ',' +
+          placemarks[0].postalCode.toString();
+      successLoading = true;
+
+      TaskFetcher.dataForEachTask[widget.taskId].locationStatus = 2;
+      prefs.setInt(widget.vehicleNo.toString() + '_4', 2);
+
+      TaskFetcher.dataForEachTask[widget.taskId].relayStatusOne = 1;
+      prefs.setInt(widget.vehicleNo.toString() + '_5', 1);
+
+      print(_vicinity);
+    });
   }
 
   @override
