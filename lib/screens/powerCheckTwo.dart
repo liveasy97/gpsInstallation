@@ -10,6 +10,7 @@ import 'package:gpsinstallation/constants/color.dart';
 import 'package:gpsinstallation/main.dart';
 import 'package:gpsinstallation/models/traccerDataModel.dart';
 import 'package:gpsinstallation/models/truckDataModel.dart';
+import 'package:gpsinstallation/screens/locationCheck.dart';
 import 'package:gpsinstallation/screens/powerCheckTwo.dart';
 import 'package:gpsinstallation/screens/stepsView.dart';
 import 'package:gpsinstallation/screens/taskFetch.dart';
@@ -330,7 +331,7 @@ class _PowerCheckTwoState extends State<PowerCheckTwo>
             onPressed: () => {
                   if (successLoading)
                     {
-                      Get.to(PowerCheckTwo(
+                      Get.to(LocationCheck(
                         taskId: widget.taskId,
                         driverName: widget.driverName,
                         driverPhoneNo: widget.driverPhoneNo,

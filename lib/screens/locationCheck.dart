@@ -6,6 +6,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'package:gpsinstallation/constants/color.dart';
 import 'package:gpsinstallation/main.dart';
+import 'package:gpsinstallation/screens/relayCheckOne.dart';
 import 'package:gpsinstallation/screens/stepsView.dart';
 import 'package:gpsinstallation/screens/taskFetch.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -249,7 +250,16 @@ class _LocationCheckState extends State<LocationCheck> {
         ),
         Text('Step 5 of 7', style: const TextStyle(fontSize: 12)),
         ElevatedButton(
-            onPressed: () => {},
+            onPressed: () => {
+                  Get.to(RelayCheckOne(
+                    taskId: widget.taskId,
+                    driverName: widget.driverName,
+                    driverPhoneNo: widget.driverPhoneNo,
+                    vehicleNo: widget.vehicleNo,
+                    vehicleOwnerName: widget.vehicleOwnerName,
+                    vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
+                  ))
+                },
             child: new Padding(
               padding: EdgeInsets.all(16.0),
               child: Text(

@@ -12,6 +12,7 @@ import 'package:gpsinstallation/functions/truckLockApiCalls.dart';
 import 'package:gpsinstallation/main.dart';
 import 'package:gpsinstallation/models/traccerDataModel.dart';
 import 'package:gpsinstallation/models/truckDataModel.dart';
+import 'package:gpsinstallation/screens/installPhotos.dart';
 import 'package:gpsinstallation/screens/powerCheckTwo.dart';
 import 'package:gpsinstallation/screens/stepsView.dart';
 import 'package:gpsinstallation/screens/taskFetch.dart';
@@ -81,6 +82,7 @@ class _RelayCheckTwoState extends State<RelayCheckTwo>
         if (lockStatus == "unlock") {
           print("THE COMMAND WENT PROPERLY");
           setState(() {
+            successLoading = true;
             lockStorage.write('lockState', true);
             lockUnlockController.lockUnlockStatus.value = true;
             lockUnlockController.updateLockUnlockStatus(true);
@@ -320,18 +322,17 @@ class _RelayCheckTwoState extends State<RelayCheckTwo>
         Text('Step 2 of 7', style: const TextStyle(fontSize: 12)),
         ElevatedButton(
             onPressed: () => {
-                  // if (successLoading)
-                  //   {
-                  //     Get.to(PowerCheckTwo(
-                  //       taskId: widget.taskId,
-                  //       driverName: widget.driverName,
-                  //       driverPhoneNo: widget.driverPhoneNo,
-                  //       vehicleNo: widget.vehicleNo,
-                  //       vehicleOwnerName: widget.vehicleOwnerName,
-                  //       vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
-                  //     )
-                  //     )
-                  //   }
+                  if (successLoading)
+                    {
+                      Get.to(InstallationPhotos(
+                        taskId: widget.taskId,
+                        driverName: widget.driverName,
+                        driverPhoneNo: widget.driverPhoneNo,
+                        vehicleNo: widget.vehicleNo,
+                        vehicleOwnerName: widget.vehicleOwnerName,
+                        vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
+                      ))
+                    }
                 },
             child: new Padding(
               padding: EdgeInsets.all(16.0),

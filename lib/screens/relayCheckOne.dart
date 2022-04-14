@@ -80,6 +80,7 @@ class _RelayCheckOneState extends State<RelayCheckOne>
         if (lockStatus == "lock") {
           print("THE COMMAND WENT PROPERLY");
           setState(() {
+            successLoading = true;
             lockStorage.write('lockState', false);
             lockUnlockController.lockUnlockStatus.value = false;
             lockUnlockController.updateLockUnlockStatus(false);
