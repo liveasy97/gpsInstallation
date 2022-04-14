@@ -65,10 +65,10 @@ class _InstallationPhotosState extends State<InstallationPhotos>
         InstallationPhotos.successUploading[1] &&
         InstallationPhotos.successUploading[2]) {
       TaskFetcher.dataForEachTask[widget.taskId].photosStatus = 2;
-      await prefs.setInt(widget.vehicleNo.toString() + '_7', 2);
 
       TaskFetcher.dataForEachTask[widget.taskId].completeStatus = true;
-      await prefs.setInt(widget.vehicleNo.toString() + '_8', 2);
+
+      await prefs.setInt('_CompletedStep', 8);
     }
   }
 

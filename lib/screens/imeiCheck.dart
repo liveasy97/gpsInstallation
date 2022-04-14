@@ -92,13 +92,12 @@ class _imeiCheckState extends State<imeiCheck> {
       if (_phoneNumber != "Unknown") {
         successLoading = true;
         TaskFetcher.dataForEachTask[widget.taskId].imeiStatus = 2;
-        await prefs.setInt(widget.vehicleNo.toString() + '_0', 2);
 
         TaskFetcher.dataForEachTask[widget.taskId].connectivityStatus = 2;
-        await prefs.setInt(widget.vehicleNo.toString() + '_1', 2);
 
         TaskFetcher.dataForEachTask[widget.taskId].powerOneStatus = 1;
-        await prefs.setInt(widget.vehicleNo.toString() + '_2', 1);
+
+        await prefs.setInt('_CompletedStep', 2);
       }
     } catch (e) {
       print("Couldn't load, Input valid IMEI");
@@ -330,7 +329,16 @@ class _imeiCheckState extends State<imeiCheck> {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         ElevatedButton(
-          onPressed: () => Get.back(),
+          onPressed: () => {
+            Get.to(StepsView(
+              taskId: widget.taskId,
+              driverName: widget.driverName,
+              driverPhoneNo: widget.driverPhoneNo,
+              vehicleNo: widget.vehicleNo,
+              vehicleOwnerName: widget.vehicleOwnerName,
+              vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
+            ))
+          },
           style: ElevatedButton.styleFrom(
               side: BorderSide(
                 width: 1.0,

@@ -37,9 +37,12 @@ class _LocationCheckState extends State<LocationCheck> {
 
   Future<void> _getAddress(double lat, double lang) async {
     final prefs = await SharedPreferences.getInstance();
+    final double? longitude = prefs.getDouble('longitude');
+    final double? latitude = prefs.getDouble('latitude');
     print("COORDINATES ARE : " + lat.toString() + ' ' + lang.toString());
     print("Doing");
-    List<Placemark> placemarks = await placemarkFromCoordinates(lat, lang);
+    List<Placemark> placemarks =
+        await placemarkFromCoordinates(latitude!, longitude!);
     print("locationFromAddress:" +
         placemarks[0].street.toString() +
         ',' +
@@ -64,10 +67,10 @@ class _LocationCheckState extends State<LocationCheck> {
       successLoading = true;
 
       TaskFetcher.dataForEachTask[widget.taskId].locationStatus = 2;
-      prefs.setInt(widget.vehicleNo.toString() + '_4', 2);
 
       TaskFetcher.dataForEachTask[widget.taskId].relayStatusOne = 1;
-      prefs.setInt(widget.vehicleNo.toString() + '_5', 1);
+
+      prefs.setInt('_CompletedStep', 5);
 
       print(_vicinity);
     });
@@ -171,6 +174,7 @@ class _LocationCheckState extends State<LocationCheck> {
                                 setState(() {
                                   successLoading = false;
                                   warningText = "Refreshing";
+
                                   _getAddress(MyApp.latitude, MyApp.longitude);
                                 });
                               },

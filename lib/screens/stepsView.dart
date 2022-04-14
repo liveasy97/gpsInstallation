@@ -56,39 +56,68 @@ class _StepsViewState extends State<StepsView> {
 
   Future<void> initializeSP() async {
     prefs = await SharedPreferences.getInstance();
+    await prefs.setString("CurrentTask", widget.vehicleNo);
+
     try {
+      int completedStep = prefs.getInt('_CompletedStep');
+      int nextStep = completedStep + 1;
+
       TaskFetcher.dataForEachTask[widget.taskId].imeiStatus =
-          (prefs.getInt(widget.vehicleNo + '_0') != null)
-              ? prefs.getInt(widget.vehicleNo + '_0')
-              : 1;
+          (completedStep >= 1)
+              ? 2
+              : (nextStep == 1)
+                  ? 1
+                  : 0;
+
       TaskFetcher.dataForEachTask[widget.taskId].connectivityStatus =
-          (prefs.getInt(widget.vehicleNo + '_1') != null)
-              ? prefs.getInt(widget.vehicleNo + '_1')
-              : 0;
+          (completedStep >= 2)
+              ? 2
+              : (nextStep == 2)
+                  ? 1
+                  : 0;
+
       TaskFetcher.dataForEachTask[widget.taskId].powerOneStatus =
-          (prefs.getInt(widget.vehicleNo + '_2') != null)
-              ? prefs.getInt(widget.vehicleNo + '_2')
-              : 0;
+          (completedStep >= 3)
+              ? 2
+              : (nextStep == 3)
+                  ? 1
+                  : 0;
+
       TaskFetcher.dataForEachTask[widget.taskId].powerTwoStatus =
-          (prefs.getInt(widget.vehicleNo + '_3') != null)
-              ? prefs.getInt(widget.vehicleNo + '_3')
-              : 0;
+          (completedStep >= 4)
+              ? 2
+              : (nextStep == 4)
+                  ? 1
+                  : 0;
+
       TaskFetcher.dataForEachTask[widget.taskId].locationStatus =
-          (prefs.getInt(widget.vehicleNo + '_4') != null)
-              ? prefs.getInt(widget.vehicleNo + '_4')
-              : 0;
+          (completedStep >= 5)
+              ? 2
+              : (nextStep == 5)
+                  ? 1
+                  : 0;
+
       TaskFetcher.dataForEachTask[widget.taskId].relayStatusOne =
-          (prefs.getInt(widget.vehicleNo + '_5') != null)
-              ? prefs.getInt(widget.vehicleNo + '_5')
-              : 0;
+          (completedStep >= 6)
+              ? 2
+              : (nextStep == 6)
+                  ? 1
+                  : 0;
+
       TaskFetcher.dataForEachTask[widget.taskId].relayStatusTwo =
-          (prefs.getInt(widget.vehicleNo + '_6') != null)
-              ? prefs.getInt(widget.vehicleNo + '_6')
-              : 0;
+          (completedStep >= 7)
+              ? 2
+              : (nextStep == 7)
+                  ? 1
+                  : 0;
+
       TaskFetcher.dataForEachTask[widget.taskId].photosStatus =
-          (prefs.getInt(widget.vehicleNo + '_7') != null)
-              ? prefs.getInt(widget.vehicleNo + '_7')
-              : 0;
+          (completedStep >= 8)
+              ? 2
+              : (nextStep == 8)
+                  ? 1
+                  : 0;
+
       setState(() {});
     } catch (e) {
       print("ERROR OCCURRED" + e.toString());

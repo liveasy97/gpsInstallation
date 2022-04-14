@@ -85,10 +85,10 @@ class _PowerCheckTwoState extends State<PowerCheckTwo>
 
     //Only when ignitionStatus is On, this is for debugging
     TaskFetcher.dataForEachTask[widget.taskId].powerTwoStatus = 2;
-    await prefs.setInt(widget.vehicleNo.toString() + '_3', 2);
 
     TaskFetcher.dataForEachTask[widget.taskId].locationStatus = 1;
-    await prefs.setInt(widget.vehicleNo.toString() + '_4', 1);
+
+    await prefs.setInt('_CompletedStep', 4);
 
     if (_traccarDataModel[0].attributes!.ignition!) {
       ignitionStatus = "On";

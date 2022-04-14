@@ -82,13 +82,18 @@ class _PowerCheckOneState extends State<PowerCheckOne> {
     successLoading = true;
 
     TaskFetcher.dataForEachTask[widget.taskId].powerOneStatus = 2;
-    await prefs.setInt(widget.vehicleNo.toString() + '_2', 2);
 
     TaskFetcher.dataForEachTask[widget.taskId].powerTwoStatus = 1;
-    await prefs.setInt(widget.vehicleNo.toString() + '_3', 1);
+
+    await prefs.setInt('_CompletedStep', 3);
+    await prefs.setString('deviceId', deviceId);
 
     MyApp.latitude = _traccarDataModel[0].latitude!;
+    await prefs.setDouble('latitude', _traccarDataModel[0].latitude!);
+
     MyApp.longitude = _traccarDataModel[0].longitude!;
+    await prefs.setDouble('longitude', _traccarDataModel[0].longitude!);
+
     if (_traccarDataModel[0].attributes!.ignition!) {
       ignitionStatus = "On";
       setState(() {});

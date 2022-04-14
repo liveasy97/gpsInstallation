@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_new
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_config/flutter_config.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:gpsinstallation/constants/color.dart';
+import 'package:gpsinstallation/functions/truckLockApiCalls.dart';
 import 'package:gpsinstallation/main.dart';
 import 'package:gpsinstallation/models/traccerDataModel.dart';
 import 'package:gpsinstallation/models/truckDataModel.dart';
@@ -52,59 +54,78 @@ class _RelayCheckTwoState extends State<RelayCheckTwo>
   bool successLoading = false;
   late TimerController _timerController;
 
-  Future<void> callApiGetDeviceId() async {
-    String basicAuth =
-        'Basic ' + base64Encode(utf8.encode('$traccarUser:$traccarPass'));
-    var url = Uri.parse(traccarApi + "/devices?uniqueId=" + MyApp.imei);
-    var response = await http
-        .get(url, headers: <String, String>{'authorization': basicAuth});
-    var body = response.body;
-    _truckDataModel = TruckDataModel.fromJson(jsonDecode(body));
-    deviceId = _truckDataModel.id.toString();
-    callApiGetStatus();
+  Future<void> sendLockApi() async {
+    final prefs = await SharedPreferences.getInstance();
+    deviceId = prefs.getString("deviceId")!;
+    await postCommandsApi(int.parse(deviceId), "engineResume", "sendingUnlock")
+        .then((uploadstatus) async {
+      if (uploadstatus == "Success") {
+        print("SENT UNLOCK TO DEVICE");
+        getCommandsResult();
+        lockStorage.write('lockState', true);
+      } else {
+        print("PROBLEM IN SENDING TO DEVICE $deviceId");
+      }
+    });
     setState(() {});
   }
 
-  Future<void> callApiGetStatus() async {
-    final prefs = await SharedPreferences.getInstance();
+  Future<void> getCommandsResult() async {
+    var timeNow = DateTime.now()
+        .subtract(Duration(hours: 5, minutes: 30))
+        .toIso8601String();
+    getCommandsResultApi(int.parse(deviceId), timeNow);
 
-    String basicAuth =
-        'Basic ' + base64Encode(utf8.encode('$traccarUser:$traccarPass'));
-    var url = Uri.parse(traccarApi + "/positions?deviceId=" + deviceId);
-
-    var response = await http
-        .get(url, headers: <String, String>{'authorization': basicAuth});
-    var body = response.body;
-
-    List<dynamic> parsedListJson = jsonDecode(body);
-    _traccarDataModel = List<TraccarDataModel>.from(
-        parsedListJson.map((i) => TraccarDataModel.fromJson(i)));
-    print("IGNITION STATUS IS" +
-        _traccarDataModel[0].attributes!.ignition!.toString());
-    successLoading = true;
-
-    if (_traccarDataModel[0].attributes!.ignition!) {
-      ignitionStatus = "On";
-
-      //Only when ignitionStatus is On, this is for debugging
-      TaskFetcher.dataForEachTask[widget.taskId].relayStatusTwo = 2;
-      await prefs.setInt(widget.vehicleNo.toString() + '_6', 2);
-
-      TaskFetcher.dataForEachTask[widget.taskId].photosStatus = 1;
-      await prefs.setInt(widget.vehicleNo.toString() + '_7', 1);
-
-      setState(() {});
-    } else {
-      ignitionStatus = "Off";
-    }
-    setState(() {});
+    Timer(Duration(seconds: 15), () {
+      getCommandsResultApi(int.parse(deviceId), timeNow).then((lockStatus) {
+        if (lockStatus == "unlock") {
+          print("THE COMMAND WENT PROPERLY");
+          setState(() {
+            lockStorage.write('lockState', true);
+            lockUnlockController.lockUnlockStatus.value = true;
+            lockUnlockController.updateLockUnlockStatus(true);
+          });
+          // lockState = false;
+          // lockStorage.write(
+          //     'lockState', lockState);
+        } else if (lockStatus == "null") {
+          print("THE COMMAND WENT NULL");
+          Get.back();
+          print("HERE");
+          Future<void> _showMyDialog() async {
+            return showDialog<void>(
+              context: context,
+              barrierDismissible: true, // user must tap button!
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('Try Again Later',
+                      style: TextStyle(
+                          color: darkBlueColor, fontWeight: FontWeight.bold)),
+                  actions: <Widget>[
+                    TextButton(
+                      child: const Text('Ok',
+                          style: TextStyle(
+                              color: darkBlueColor,
+                              fontWeight: FontWeight.w600)),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          }
+        }
+      });
+    });
   }
 
   @override
   void initState() {
     _timerController = TimerController(this);
     super.initState();
-    callApiGetDeviceId();
+    sendLockApi();
   }
 
   @override
@@ -209,7 +230,7 @@ class _RelayCheckTwoState extends State<RelayCheckTwo>
                                                     const Duration(seconds: 15),
                                                 // controller: _timerController,
                                                 onEnd: () {
-                                                  callApiGetDeviceId();
+                                                  sendLockApi();
                                                   // if (ignitionStatus != "On") {
                                                   //   Navigator.of(context)
                                                   //       .pushReplacement(

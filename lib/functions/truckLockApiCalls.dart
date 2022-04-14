@@ -7,7 +7,7 @@ import 'package:flutter_config/flutter_config.dart';
 import 'package:get_storage/get_storage.dart';
 
 TransporterIdController transporterIdController =
-    Get.find<TransporterIdController>();
+    Get.put(TransporterIdController());
 final lockStorage = GetStorage();
 String? traccarUser = transporterIdController.mobileNum.value;
 String traccarPass = FlutterConfig.get("traccarPass");
@@ -19,14 +19,6 @@ LockUnlockController lockUnlockController = Get.find<LockUnlockController>();
 
 //TRACCAR API CALLS------------------------------------------------------------
 Future<String> postCommandsApi(
-  final List gpsData,
-  var gpsDataHistory,
-  var gpsStoppageHistory,
-  var routeHistory,
-  final String? TruckNo,
-  final String? driverNum,
-  final String? driverName,
-  var truckId,
   int? deviceId,
   String? type,
   String? description,
@@ -48,6 +40,8 @@ Future<String> postCommandsApi(
           "THE CONTROLLER VALUE IS ${lockUnlockController.lockUnlockStatus.value}");
       return "Success";
     } else {
+      print(
+          "Error ${response.statusCode} \n Printing Response ${response.body}");
       return "Error ${response.statusCode} \n Printing Response ${response.body}";
     }
   } catch (e) {
