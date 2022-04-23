@@ -15,6 +15,7 @@ import 'package:gpsinstallation/screens/powerCheckOne.dart';
 import 'package:gpsinstallation/screens/stepsView.dart';
 import 'package:gpsinstallation/screens/taskFetch.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 // ignore: camel_case_types
 class imeiCheck extends StatefulWidget {
@@ -79,6 +80,8 @@ class _imeiCheckState extends State<imeiCheck> {
   }
 
   Future<void> callApi(String imeiText) async {
+    final prefs = await SharedPreferences.getInstance();
+
     var url = Uri.parse("$hardwareAPIKey?imei=" + imeiText);
     var response = await http.get(url);
     var body = response.body;
@@ -89,8 +92,12 @@ class _imeiCheckState extends State<imeiCheck> {
       if (_phoneNumber != "Unknown") {
         successLoading = true;
         TaskFetcher.dataForEachTask[widget.taskId].imeiStatus = 2;
+
         TaskFetcher.dataForEachTask[widget.taskId].connectivityStatus = 2;
+
         TaskFetcher.dataForEachTask[widget.taskId].powerOneStatus = 1;
+
+        await prefs.setInt('_CompletedStep', 2);
       }
     } catch (e) {
       print("Couldn't load, Input valid IMEI");
@@ -188,7 +195,16 @@ class _imeiCheckState extends State<imeiCheck> {
                           maxLength: 20,
                           decoration: InputDecoration(
                             labelText: 'IMEI number likhiye',
-                            suffixIcon: Icon(Icons.check_circle),
+                            suffixIcon: IconButton(
+                                icon: Icon(Icons.search),
+                                color: darkBlueColor,
+                                onPressed: () {
+                                  MyApp.imei = _scanBarcode;
+                                  callApi(_scanBarcode);
+                                  setState(() {
+                                    validatedIcon = 1;
+                                  });
+                                }),
                             enabledBorder: OutlineInputBorder(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(6.0)),
@@ -313,7 +329,16 @@ class _imeiCheckState extends State<imeiCheck> {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         ElevatedButton(
-          onPressed: () => Get.back(),
+          onPressed: () => {
+            Get.to(StepsView(
+              taskId: widget.taskId,
+              driverName: widget.driverName,
+              driverPhoneNo: widget.driverPhoneNo,
+              vehicleNo: widget.vehicleNo,
+              vehicleOwnerName: widget.vehicleOwnerName,
+              vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
+            ))
+          },
           style: ElevatedButton.styleFrom(
               side: BorderSide(
                 width: 1.0,

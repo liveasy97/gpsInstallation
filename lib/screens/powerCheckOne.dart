@@ -14,6 +14,7 @@ import 'package:gpsinstallation/screens/powerCheckTwo.dart';
 import 'package:gpsinstallation/screens/stepsView.dart';
 import 'package:gpsinstallation/screens/taskFetch.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PowerCheckOne extends StatefulWidget {
   int taskId;
@@ -63,6 +64,8 @@ class _PowerCheckOneState extends State<PowerCheckOne> {
   }
 
   Future<void> callApiGetStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+
     String basicAuth =
         'Basic ' + base64Encode(utf8.encode('$traccarUser:$traccarPass'));
     var url = Uri.parse(traccarApi + "/positions?deviceId=" + deviceId);
@@ -78,13 +81,19 @@ class _PowerCheckOneState extends State<PowerCheckOne> {
         _traccarDataModel[0].attributes!.ignition!.toString());
     successLoading = true;
 
-    TaskFetcher.dataForEachTask[widget.taskId].imeiStatus = 2;
-    TaskFetcher.dataForEachTask[widget.taskId].connectivityStatus = 2;
     TaskFetcher.dataForEachTask[widget.taskId].powerOneStatus = 2;
+
     TaskFetcher.dataForEachTask[widget.taskId].powerTwoStatus = 1;
 
+    await prefs.setInt('_CompletedStep', 3);
+    await prefs.setString('deviceId', deviceId);
+
     MyApp.latitude = _traccarDataModel[0].latitude!;
+    await prefs.setDouble('latitude', _traccarDataModel[0].latitude!);
+
     MyApp.longitude = _traccarDataModel[0].longitude!;
+    await prefs.setDouble('longitude', _traccarDataModel[0].longitude!);
+
     if (_traccarDataModel[0].attributes!.ignition!) {
       ignitionStatus = "On";
       setState(() {});

@@ -7,6 +7,7 @@ import 'package:gpsinstallation/main.dart';
 import 'package:gpsinstallation/screens/imagePickerScreen.dart';
 import 'package:gpsinstallation/screens/stepsView.dart';
 import 'package:gpsinstallation/screens/taskFetch.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class InstallationPhotos extends StatefulWidget {
   int taskId;
@@ -52,20 +53,23 @@ class _InstallationPhotosState extends State<InstallationPhotos>
     }
   }
 
+  @override
   void initState() {
+    checkStat();
+    super.initState();
+  }
+
+  Future<void> checkStat() async {
+    final prefs = await SharedPreferences.getInstance();
     if (InstallationPhotos.successUploading[0] &&
         InstallationPhotos.successUploading[1] &&
         InstallationPhotos.successUploading[2]) {
-      TaskFetcher.dataForEachTask[widget.taskId].imeiStatus = 2;
-      TaskFetcher.dataForEachTask[widget.taskId].connectivityStatus = 2;
-      TaskFetcher.dataForEachTask[widget.taskId].powerOneStatus = 2;
-      TaskFetcher.dataForEachTask[widget.taskId].powerTwoStatus = 2;
-      TaskFetcher.dataForEachTask[widget.taskId].locationStatus = 2;
-      TaskFetcher.dataForEachTask[widget.taskId].relayStatus = 2;
       TaskFetcher.dataForEachTask[widget.taskId].photosStatus = 2;
+
       TaskFetcher.dataForEachTask[widget.taskId].completeStatus = true;
+
+      await prefs.setInt('_CompletedStep', 8);
     }
-    super.initState();
   }
 
   @override

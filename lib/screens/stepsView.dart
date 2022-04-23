@@ -9,8 +9,11 @@ import 'package:gpsinstallation/screens/installPhotos.dart';
 import 'package:gpsinstallation/screens/locationCheck.dart';
 import 'package:gpsinstallation/screens/powerCheckOne.dart';
 import 'package:gpsinstallation/screens/powerCheckTwo.dart';
+import 'package:gpsinstallation/screens/relayCheckOne.dart';
+import 'package:gpsinstallation/screens/relayCheckTwo.dart';
 import 'package:gpsinstallation/screens/submittedScreen.dart';
 import 'package:gpsinstallation/screens/taskFetch.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class StepsView extends StatefulWidget {
   String vehicleNo;
@@ -38,9 +41,88 @@ class _StepsViewState extends State<StepsView> {
     "Power check 1",
     "Power check 2",
     "Location check",
-    "Relay check",
+    "Relay check 1",
+    "Relay check 2",
     "Installation photos"
   ];
+
+  var prefs;
+
+  @override
+  void initState() {
+    initializeSP();
+    super.initState();
+  }
+
+  Future<void> initializeSP() async {
+    prefs = await SharedPreferences.getInstance();
+    await prefs.setString("CurrentTask", widget.vehicleNo);
+
+    try {
+      int completedStep = prefs.getInt('_CompletedStep');
+      int nextStep = completedStep + 1;
+
+      TaskFetcher.dataForEachTask[widget.taskId].imeiStatus =
+          (completedStep >= 1)
+              ? 2
+              : (nextStep == 1)
+                  ? 1
+                  : 0;
+
+      TaskFetcher.dataForEachTask[widget.taskId].connectivityStatus =
+          (completedStep >= 2)
+              ? 2
+              : (nextStep == 2)
+                  ? 1
+                  : 0;
+
+      TaskFetcher.dataForEachTask[widget.taskId].powerOneStatus =
+          (completedStep >= 3)
+              ? 2
+              : (nextStep == 3)
+                  ? 1
+                  : 0;
+
+      TaskFetcher.dataForEachTask[widget.taskId].powerTwoStatus =
+          (completedStep >= 4)
+              ? 2
+              : (nextStep == 4)
+                  ? 1
+                  : 0;
+
+      TaskFetcher.dataForEachTask[widget.taskId].locationStatus =
+          (completedStep >= 5)
+              ? 2
+              : (nextStep == 5)
+                  ? 1
+                  : 0;
+
+      TaskFetcher.dataForEachTask[widget.taskId].relayStatusOne =
+          (completedStep >= 6)
+              ? 2
+              : (nextStep == 6)
+                  ? 1
+                  : 0;
+
+      TaskFetcher.dataForEachTask[widget.taskId].relayStatusTwo =
+          (completedStep >= 7)
+              ? 2
+              : (nextStep == 7)
+                  ? 1
+                  : 0;
+
+      TaskFetcher.dataForEachTask[widget.taskId].photosStatus =
+          (completedStep >= 8)
+              ? 2
+              : (nextStep == 8)
+                  ? 1
+                  : 0;
+
+      setState(() {});
+    } catch (e) {
+      print("ERROR OCCURRED" + e.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +204,7 @@ class _StepsViewState extends State<StepsView> {
                   child: GridView.builder(
                     shrinkWrap: true,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: 7,
+                    itemCount: 8,
                     itemBuilder: (ctx, i) {
                       return GestureDetector(
                         onTap: () => {NavigateToView(i)},
@@ -225,7 +307,7 @@ class _StepsViewState extends State<StepsView> {
   }
 
   Row getStatusRow(int i) {
-    int status = getStatus(i);
+    int? status = getStatus(i);
     String statusText = "Pending";
     Color statusColor = Colors.grey;
     switch (status) {
@@ -312,9 +394,30 @@ class _StepsViewState extends State<StepsView> {
         }
         break;
       case 5:
-        //Get.to(imeiCheck(taskId: index));
+        if (TaskFetcher.dataForEachTask[widget.taskId].relayStatusOne == 1) {
+          Get.to(RelayCheckOne(
+            taskId: widget.taskId,
+            driverName: widget.driverName,
+            driverPhoneNo: widget.driverPhoneNo,
+            vehicleNo: widget.vehicleNo,
+            vehicleOwnerName: widget.vehicleOwnerName,
+            vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
+          ));
+        }
         break;
       case 6:
+        if (TaskFetcher.dataForEachTask[widget.taskId].relayStatusTwo == 1) {
+          Get.to(RelayCheckTwo(
+            taskId: widget.taskId,
+            driverName: widget.driverName,
+            driverPhoneNo: widget.driverPhoneNo,
+            vehicleNo: widget.vehicleNo,
+            vehicleOwnerName: widget.vehicleOwnerName,
+            vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
+          ));
+        }
+        break;
+      case 7:
         if (TaskFetcher.dataForEachTask[widget.taskId].photosStatus == 1) {
           Get.to(InstallationPhotos(
             taskId: widget.taskId,
@@ -329,8 +432,8 @@ class _StepsViewState extends State<StepsView> {
     }
   }
 
-  int getStatus(int i) {
-    int result = 0;
+  int? getStatus(int i) {
+    int? result = 0;
     switch (i) {
       case 0:
         result = TaskFetcher.dataForEachTask[widget.taskId].imeiStatus;
@@ -348,9 +451,12 @@ class _StepsViewState extends State<StepsView> {
         result = TaskFetcher.dataForEachTask[widget.taskId].locationStatus;
         break;
       case 5:
-        result = TaskFetcher.dataForEachTask[widget.taskId].relayStatus;
+        result = TaskFetcher.dataForEachTask[widget.taskId].relayStatusOne;
         break;
       case 6:
+        result = TaskFetcher.dataForEachTask[widget.taskId].relayStatusTwo;
+        break;
+      case 7:
         result = TaskFetcher.dataForEachTask[widget.taskId].photosStatus;
         break;
     }
