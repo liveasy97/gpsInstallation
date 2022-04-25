@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:gpsinstallation/constants/color.dart';
 import 'package:gpsinstallation/screens/taskFetch.dart';
+import 'package:gpsinstallation/widgets/drawerWidget.dart';
 
 class SubmittedScreen extends StatelessWidget {
   const SubmittedScreen({Key? key}) : super(key: key);
@@ -9,8 +10,17 @@ class SubmittedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
+    final GlobalKey<ScaffoldState> _scaffoldKey =
+        new GlobalKey<ScaffoldState>();
 
     return Scaffold(
+        key: _scaffoldKey,
+        drawer: Drawer(
+          child: DrawerWidget(
+            mobileNum: '7715813911',
+            userName: 'Akshay Krishna',
+          ),
+        ),
         appBar: AppBar(
           title: const Text(
             "Liveasy GPS Installer",
@@ -20,13 +30,14 @@ class SubmittedScreen extends StatelessWidget {
           backgroundColor: Color(0xFFF0F0F0),
           automaticallyImplyLeading: true,
           leading: IconButton(
-              icon: Image.asset(
-                "assets/icons/drawerIcon.png",
-                width: 24.0,
-                height: 24.0,
-              ),
-              // onPressed: () => Scaffold.of(context).openDrawer(),
-              onPressed: () => {}),
+            icon: Image.asset(
+              "assets/icons/drawerIcon.png",
+              width: 24.0,
+              height: 24.0,
+            ),
+            // onPressed: () => Scaffold.of(context).openDrawer(),
+            onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+          ),
         ),
         body: Center(
             child: Padding(

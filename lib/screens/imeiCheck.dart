@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_config/flutter_config.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:gpsinstallation/constants/color.dart';
@@ -14,6 +15,7 @@ import 'package:gpsinstallation/models/hardwareDataModel.dart';
 import 'package:gpsinstallation/screens/powerCheckOne.dart';
 import 'package:gpsinstallation/screens/stepsView.dart';
 import 'package:gpsinstallation/screens/taskFetch.dart';
+import 'package:gpsinstallation/widgets/drawerWidget.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -45,41 +47,14 @@ class _imeiCheckState extends State<imeiCheck> {
   String hardwareAPIKey = FlutterConfig.get("hardwareApi");
   bool successLoading = false;
   String warningText = "Scan or Input valid IMEI";
-
-  Future<bool> _onWillPop() async {
-    return (await showDialog(
-          context: context,
-          builder: (context) => new AlertDialog(
-            title: new Text('Are you sure?'),
-            content: new Text('Do you want to exit an App'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: new Text('No'),
-              ),
-              TextButton(
-                onPressed: () => Get.to(StepsView(
-                  taskId: widget.taskId,
-                  driverName: widget.driverName,
-                  driverPhoneNo: widget.driverPhoneNo,
-                  vehicleNo: widget.vehicleNo,
-                  vehicleOwnerName: widget.vehicleOwnerName,
-                  vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
-                )),
-                child: new Text('Yes'),
-              ),
-            ],
-          ),
-        )) ??
-        false;
-  }
-
+  late GlobalKey<ScaffoldState> _scaffoldKey;
   String removeExtraChar(String multiline) {
     var singleline = multiline.replaceAll("\n", "");
     return singleline;
   }
 
   Future<void> callApi(String imeiText) async {
+    EasyLoading.show(status: 'Loading...');
     final prefs = await SharedPreferences.getInstance();
 
     var url = Uri.parse("$hardwareAPIKey?imei=" + imeiText);
@@ -105,7 +80,14 @@ class _imeiCheckState extends State<imeiCheck> {
       successLoading = false;
       print("IMEEE" + MyApp.imei);
     }
+    EasyLoading.dismiss();
     setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _scaffoldKey = new GlobalKey<ScaffoldState>();
   }
 
   Future<void> scanBarcodeNormal() async {
@@ -130,28 +112,36 @@ class _imeiCheckState extends State<imeiCheck> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
+
     var validatedIcon = 0;
     return WillPopScope(
       child: Scaffold(
+          key: _scaffoldKey,
+          drawer: Drawer(
+            child: DrawerWidget(
+              mobileNum: '7715813911',
+              userName: 'Akshay Krishna',
+            ),
+          ),
           resizeToAvoidBottomInset: false,
           appBar: AppBar(
-            title: const Text(
-              "Liveasy GPS Installer",
-              style:
-                  TextStyle(color: darkBlueColor, fontWeight: FontWeight.w700),
-            ),
-            elevation: 0,
-            backgroundColor: Color(0xFFF0F0F0),
-            automaticallyImplyLeading: true,
-            leading: IconButton(
+              title: const Text(
+                "Liveasy GPS Installer",
+                style: TextStyle(
+                    color: darkBlueColor, fontWeight: FontWeight.w700),
+              ),
+              elevation: 0,
+              backgroundColor: Color(0xFFF0F0F0),
+              automaticallyImplyLeading: true,
+              leading: IconButton(
                 icon: Image.asset(
                   "assets/icons/drawerIcon.png",
                   width: 24.0,
                   height: 24.0,
                 ),
                 // onPressed: () => Scaffold.of(context).openDrawer(),
-                onPressed: () => {}),
-          ),
+                onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+              )),
           body: Center(
               child: Padding(
                   padding: const EdgeInsets.all(16),

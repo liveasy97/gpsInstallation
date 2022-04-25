@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:gpsinstallation/constants/color.dart';
@@ -13,6 +14,7 @@ import 'package:gpsinstallation/screens/relayCheckOne.dart';
 import 'package:gpsinstallation/screens/relayCheckTwo.dart';
 import 'package:gpsinstallation/screens/submittedScreen.dart';
 import 'package:gpsinstallation/screens/taskFetch.dart';
+import 'package:gpsinstallation/widgets/drawerWidget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StepsView extends StatefulWidget {
@@ -50,6 +52,7 @@ class _StepsViewState extends State<StepsView> {
 
   @override
   void initState() {
+    EasyLoading.show(status: 'Loading...');
     initializeSP();
     super.initState();
   }
@@ -122,13 +125,26 @@ class _StepsViewState extends State<StepsView> {
     } catch (e) {
       print("ERROR OCCURRED" + e.toString());
     }
+    Future.delayed(const Duration(milliseconds: 500), () {
+      EasyLoading.dismiss();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final GlobalKey<ScaffoldState> _scaffoldKey =
+        new GlobalKey<ScaffoldState>();
+
     double width = MediaQuery.of(context).size.width;
     return WillPopScope(
       child: Scaffold(
+        key: _scaffoldKey,
+        drawer: Drawer(
+          child: DrawerWidget(
+            mobileNum: '7715813911',
+            userName: 'Akshay Krishna',
+          ),
+        ),
         appBar: AppBar(
           title: const Text(
             "Liveasy GPS Installer",
@@ -138,13 +154,14 @@ class _StepsViewState extends State<StepsView> {
           backgroundColor: Color(0xFFF0F0F0),
           automaticallyImplyLeading: true,
           leading: IconButton(
-              icon: Image.asset(
-                "assets/icons/drawerIcon.png",
-                width: 24.0,
-                height: 24.0,
-              ),
-              // onPressed: () => Scaffold.of(context).openDrawer(),
-              onPressed: () => {}),
+            icon: Image.asset(
+              "assets/icons/drawerIcon.png",
+              width: 24.0,
+              height: 24.0,
+            ),
+            // onPressed: () => Scaffold.of(context).openDrawer(),
+            onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+          ),
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -343,91 +360,91 @@ class _StepsViewState extends State<StepsView> {
   void NavigateToView(int index) {
     switch (index) {
       case 0:
-        if (TaskFetcher.dataForEachTask[widget.taskId].imeiStatus == 1) {
-          Get.to(imeiCheck(
-            taskId: widget.taskId,
-            driverName: widget.driverName,
-            driverPhoneNo: widget.driverPhoneNo,
-            vehicleNo: widget.vehicleNo,
-            vehicleOwnerName: widget.vehicleOwnerName,
-            vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
-          ));
-        }
+        // if (TaskFetcher.dataForEachTask[widget.taskId].imeiStatus == 1) {
+        Get.to(imeiCheck(
+          taskId: widget.taskId,
+          driverName: widget.driverName,
+          driverPhoneNo: widget.driverPhoneNo,
+          vehicleNo: widget.vehicleNo,
+          vehicleOwnerName: widget.vehicleOwnerName,
+          vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
+        ));
+        //   }
         break;
       case 1:
         //Get.to(imeiCheck(taskId: 0));
         break;
       case 2:
-        if (TaskFetcher.dataForEachTask[widget.taskId].powerOneStatus == 1) {
-          Get.to(PowerCheckOne(
-            taskId: widget.taskId,
-            driverName: widget.driverName,
-            driverPhoneNo: widget.driverPhoneNo,
-            vehicleNo: widget.vehicleNo,
-            vehicleOwnerName: widget.vehicleOwnerName,
-            vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
-          ));
-        }
+        //   if (TaskFetcher.dataForEachTask[widget.taskId].powerOneStatus == 1) {
+        Get.to(PowerCheckOne(
+          taskId: widget.taskId,
+          driverName: widget.driverName,
+          driverPhoneNo: widget.driverPhoneNo,
+          vehicleNo: widget.vehicleNo,
+          vehicleOwnerName: widget.vehicleOwnerName,
+          vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
+        ));
+        //  }
         break;
       case 3:
-        if (TaskFetcher.dataForEachTask[widget.taskId].powerTwoStatus == 1) {
-          Get.to(PowerCheckTwo(
-            taskId: widget.taskId,
-            driverName: widget.driverName,
-            driverPhoneNo: widget.driverPhoneNo,
-            vehicleNo: widget.vehicleNo,
-            vehicleOwnerName: widget.vehicleOwnerName,
-            vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
-          ));
-        }
+        //  if (TaskFetcher.dataForEachTask[widget.taskId].powerTwoStatus == 1) {
+        Get.to(PowerCheckTwo(
+          taskId: widget.taskId,
+          driverName: widget.driverName,
+          driverPhoneNo: widget.driverPhoneNo,
+          vehicleNo: widget.vehicleNo,
+          vehicleOwnerName: widget.vehicleOwnerName,
+          vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
+        ));
+        //   }
         break;
       case 4:
-        if (TaskFetcher.dataForEachTask[widget.taskId].locationStatus == 1) {
-          Get.to(LocationCheck(
-            taskId: widget.taskId,
-            driverName: widget.driverName,
-            driverPhoneNo: widget.driverPhoneNo,
-            vehicleNo: widget.vehicleNo,
-            vehicleOwnerName: widget.vehicleOwnerName,
-            vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
-          ));
-        }
+        //   if (TaskFetcher.dataForEachTask[widget.taskId].locationStatus == 1) {
+        Get.to(LocationCheck(
+          taskId: widget.taskId,
+          driverName: widget.driverName,
+          driverPhoneNo: widget.driverPhoneNo,
+          vehicleNo: widget.vehicleNo,
+          vehicleOwnerName: widget.vehicleOwnerName,
+          vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
+        ));
+        //   }
         break;
       case 5:
-        if (TaskFetcher.dataForEachTask[widget.taskId].relayStatusOne == 1) {
-          Get.to(RelayCheckOne(
-            taskId: widget.taskId,
-            driverName: widget.driverName,
-            driverPhoneNo: widget.driverPhoneNo,
-            vehicleNo: widget.vehicleNo,
-            vehicleOwnerName: widget.vehicleOwnerName,
-            vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
-          ));
-        }
+        //    if (TaskFetcher.dataForEachTask[widget.taskId].relayStatusOne == 1) {
+        Get.to(RelayCheckOne(
+          taskId: widget.taskId,
+          driverName: widget.driverName,
+          driverPhoneNo: widget.driverPhoneNo,
+          vehicleNo: widget.vehicleNo,
+          vehicleOwnerName: widget.vehicleOwnerName,
+          vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
+        ));
+        //    }
         break;
       case 6:
-        if (TaskFetcher.dataForEachTask[widget.taskId].relayStatusTwo == 1) {
-          Get.to(RelayCheckTwo(
-            taskId: widget.taskId,
-            driverName: widget.driverName,
-            driverPhoneNo: widget.driverPhoneNo,
-            vehicleNo: widget.vehicleNo,
-            vehicleOwnerName: widget.vehicleOwnerName,
-            vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
-          ));
-        }
+        //  if (TaskFetcher.dataForEachTask[widget.taskId].relayStatusTwo == 1) {
+        Get.to(RelayCheckTwo(
+          taskId: widget.taskId,
+          driverName: widget.driverName,
+          driverPhoneNo: widget.driverPhoneNo,
+          vehicleNo: widget.vehicleNo,
+          vehicleOwnerName: widget.vehicleOwnerName,
+          vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
+        ));
+        //   }
         break;
       case 7:
-        if (TaskFetcher.dataForEachTask[widget.taskId].photosStatus == 1) {
-          Get.to(InstallationPhotos(
-            taskId: widget.taskId,
-            driverName: widget.driverName,
-            driverPhoneNo: widget.driverPhoneNo,
-            vehicleNo: widget.vehicleNo,
-            vehicleOwnerName: widget.vehicleOwnerName,
-            vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
-          ));
-        }
+        //   if (TaskFetcher.dataForEachTask[widget.taskId].photosStatus == 1) {
+        Get.to(InstallationPhotos(
+          taskId: widget.taskId,
+          driverName: widget.driverName,
+          driverPhoneNo: widget.driverPhoneNo,
+          vehicleNo: widget.vehicleNo,
+          vehicleOwnerName: widget.vehicleOwnerName,
+          vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
+        ));
+        //   }
         break;
     }
   }

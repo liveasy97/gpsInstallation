@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_config/flutter_config.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:gpsinstallation/constants/color.dart';
@@ -13,6 +14,7 @@ import 'package:gpsinstallation/models/truckDataModel.dart';
 import 'package:gpsinstallation/screens/powerCheckTwo.dart';
 import 'package:gpsinstallation/screens/stepsView.dart';
 import 'package:gpsinstallation/screens/taskFetch.dart';
+import 'package:gpsinstallation/widgets/drawerWidget.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -49,6 +51,7 @@ class _PowerCheckOneState extends State<PowerCheckOne> {
   bool successLoading = false;
 
   Future<void> callApiGetDeviceId() async {
+    EasyLoading.show(status: 'Loading...');
     String basicAuth =
         'Basic ' + base64Encode(utf8.encode('$traccarUser:$traccarPass'));
     var url = Uri.parse(traccarApi + "/devices?uniqueId=" + MyApp.imei);
@@ -60,10 +63,12 @@ class _PowerCheckOneState extends State<PowerCheckOne> {
     deviceId = _truckDataModel.id.toString();
     print(deviceId + "DEVICE IIID");
     callApiGetStatus();
+    EasyLoading.dismiss();
     setState(() {});
   }
 
   Future<void> callApiGetStatus() async {
+    EasyLoading.show(status: 'Loading...');
     final prefs = await SharedPreferences.getInstance();
 
     String basicAuth =
@@ -100,6 +105,7 @@ class _PowerCheckOneState extends State<PowerCheckOne> {
     } else {
       ignitionStatus = "Off";
     }
+    EasyLoading.dismiss();
     setState(() {});
   }
 
@@ -112,27 +118,37 @@ class _PowerCheckOneState extends State<PowerCheckOne> {
 
   @override
   Widget build(BuildContext context) {
+    final GlobalKey<ScaffoldState> _scaffoldKey =
+        new GlobalKey<ScaffoldState>();
+
     double height = MediaQuery.of(context).size.height;
     return WillPopScope(
       child: Scaffold(
-          appBar: AppBar(
-            title: const Text(
-              "Liveasy GPS Installer",
-              style:
-                  TextStyle(color: darkBlueColor, fontWeight: FontWeight.w700),
+          key: _scaffoldKey,
+          drawer: Drawer(
+            child: DrawerWidget(
+              mobileNum: '7715813911',
+              userName: 'Akshay Krishna',
             ),
-            elevation: 0,
-            backgroundColor: Color(0xFFF0F0F0),
-            automaticallyImplyLeading: true,
-            leading: IconButton(
+          ),
+          appBar: AppBar(
+              title: const Text(
+                "Liveasy GPS Installer",
+                style: TextStyle(
+                    color: darkBlueColor, fontWeight: FontWeight.w700),
+              ),
+              elevation: 0,
+              backgroundColor: Color(0xFFF0F0F0),
+              automaticallyImplyLeading: true,
+              leading: IconButton(
                 icon: Image.asset(
                   "assets/icons/drawerIcon.png",
                   width: 24.0,
                   height: 24.0,
                 ),
                 // onPressed: () => Scaffold.of(context).openDrawer(),
-                onPressed: () => {}),
-          ),
+                onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+              )),
           body: Center(
               child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -245,7 +261,16 @@ class _PowerCheckOneState extends State<PowerCheckOne> {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         ElevatedButton(
-            onPressed: () => Get.back(),
+            onPressed: () => {
+                  Get.to(StepsView(
+                    taskId: widget.taskId,
+                    driverName: widget.driverName,
+                    driverPhoneNo: widget.driverPhoneNo,
+                    vehicleNo: widget.vehicleNo,
+                    vehicleOwnerName: widget.vehicleOwnerName,
+                    vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
+                  ))
+                },
             child: new Padding(
               padding: EdgeInsets.all(16.0),
               child: Text(
