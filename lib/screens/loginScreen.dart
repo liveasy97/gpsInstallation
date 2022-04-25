@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:gpsinstallation/constants/color.dart';
 import 'package:gpsinstallation/functions/authenticationHelper.dart';
 import 'package:gpsinstallation/main.dart';
@@ -136,7 +137,7 @@ class _LoginFormState extends State<LoginForm> {
             child: ElevatedButton(
               onPressed: () {
                 // Respond to button press
-
+                EasyLoading.show(status: 'Signing In...');
                 if (_formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
 

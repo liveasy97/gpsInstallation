@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_config/flutter_config.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geocode/geocode.dart';
 import 'package:geocoding/geocoding.dart';
@@ -9,6 +10,7 @@ import 'package:gpsinstallation/main.dart';
 import 'package:gpsinstallation/screens/relayCheckOne.dart';
 import 'package:gpsinstallation/screens/stepsView.dart';
 import 'package:gpsinstallation/screens/taskFetch.dart';
+import 'package:gpsinstallation/widgets/drawerWidget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocationCheck extends StatefulWidget {
@@ -37,6 +39,7 @@ class _LocationCheckState extends State<LocationCheck> {
   String mapsKey = FlutterConfig.get("mapKey");
 
   Future<void> _getAddress(double lat, double lang) async {
+    EasyLoading.show(status: 'Loading...');
     final prefs = await SharedPreferences.getInstance();
     final double? longitude = prefs.getDouble('longitude');
     final double? latitude = prefs.getDouble('latitude');
@@ -54,7 +57,7 @@ class _LocationCheckState extends State<LocationCheck> {
         placemarks[0].administrativeArea.toString() +
         ',' +
         placemarks[0].postalCode.toString());
-
+    EasyLoading.dismiss();
     setState(() {
       _vicinity = placemarks[0].street.toString() +
           ',' +
@@ -85,28 +88,38 @@ class _LocationCheckState extends State<LocationCheck> {
 
   @override
   Widget build(BuildContext context) {
+    final GlobalKey<ScaffoldState> _scaffoldKey =
+        new GlobalKey<ScaffoldState>();
+
     double height = MediaQuery.of(context).size.height;
     return WillPopScope(
       child: Scaffold(
+          key: _scaffoldKey,
+          drawer: Drawer(
+            child: DrawerWidget(
+              mobileNum: '7715813911',
+              userName: 'Akshay Krishna',
+            ),
+          ),
           resizeToAvoidBottomInset: false,
           appBar: AppBar(
-            title: const Text(
-              "Liveasy GPS Installer",
-              style:
-                  TextStyle(color: darkBlueColor, fontWeight: FontWeight.w700),
-            ),
-            elevation: 0,
-            backgroundColor: Color(0xFFF0F0F0),
-            automaticallyImplyLeading: true,
-            leading: IconButton(
+              title: const Text(
+                "Liveasy GPS Installer",
+                style: TextStyle(
+                    color: darkBlueColor, fontWeight: FontWeight.w700),
+              ),
+              elevation: 0,
+              backgroundColor: Color(0xFFF0F0F0),
+              automaticallyImplyLeading: true,
+              leading: IconButton(
                 icon: Image.asset(
                   "assets/icons/drawerIcon.png",
                   width: 24.0,
                   height: 24.0,
                 ),
                 // onPressed: () => Scaffold.of(context).openDrawer(),
-                onPressed: () => {}),
-          ),
+                onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+              )),
           body: Center(
               child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -175,8 +188,11 @@ class _LocationCheckState extends State<LocationCheck> {
                                 setState(() {
                                   successLoading = false;
                                   warningText = "Refreshing";
-
-                                  _getAddress(MyApp.latitude, MyApp.longitude);
+                                  Future.delayed(
+                                      const Duration(milliseconds: 500), () {
+                                    _getAddress(
+                                        MyApp.latitude, MyApp.longitude);
+                                  });
                                 });
                               },
                               child: Padding(
@@ -231,7 +247,16 @@ class _LocationCheckState extends State<LocationCheck> {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         ElevatedButton(
-          onPressed: () => Get.back(),
+          onPressed: () => {
+            Get.to(StepsView(
+              taskId: widget.taskId,
+              driverName: widget.driverName,
+              driverPhoneNo: widget.driverPhoneNo,
+              vehicleNo: widget.vehicleNo,
+              vehicleOwnerName: widget.vehicleOwnerName,
+              vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
+            ))
+          },
           style: ElevatedButton.styleFrom(
               side: BorderSide(
                 width: 1.0,

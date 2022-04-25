@@ -6,12 +6,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_config/flutter_config.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:gpsinstallation/constants/color.dart';
+import 'package:gpsinstallation/constants/fontSize.dart';
+import 'package:gpsinstallation/constants/fontWeights.dart';
+import 'package:gpsinstallation/constants/radius.dart';
+import 'package:gpsinstallation/constants/spaces.dart';
 import 'package:gpsinstallation/data/installDataHolder.dart';
 import 'package:gpsinstallation/models/installerTaskDataModel.dart';
 import 'package:gpsinstallation/screens/stepsView.dart';
+import 'package:gpsinstallation/widgets/drawerWidget.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -29,6 +34,7 @@ class _TaskFetcherState extends State<TaskFetcher> {
   bool successLoading = false;
   var prefs;
   Future<void> callApi() async {
+    EasyLoading.show(status: 'Loading...');
     String uid = FirebaseAuth.instance.currentUser!.uid.toString();
     var url = Uri.parse(installerAPIKey + "?gpsInstallerId=" + uid);
     var response = await http.get(url);
@@ -47,15 +53,19 @@ class _TaskFetcherState extends State<TaskFetcher> {
         successLoading = true;
       }
     });
+    EasyLoading.dismiss();
   }
 
   @override
   void initState() {
     super.initState();
+    EasyLoading.show(status: 'Loading...');
     callApi();
   }
 
   int backCount = 0;
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  String name = "Akshay";
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -64,6 +74,13 @@ class _TaskFetcherState extends State<TaskFetcher> {
           return Future.value(true);
         },
         child: Scaffold(
+            key: _scaffoldKey,
+            drawer: Drawer(
+              child: DrawerWidget(
+                mobileNum: '7715813911',
+                userName: 'Akshay Krishna',
+              ),
+            ),
             appBar: AppBar(
               title: const Text(
                 "Liveasy GPS Installer",
@@ -74,13 +91,14 @@ class _TaskFetcherState extends State<TaskFetcher> {
               backgroundColor: Color(0xFFF0F0F0),
               automaticallyImplyLeading: true,
               leading: IconButton(
-                  icon: Image.asset(
-                    "assets/icons/drawerIcon.png",
-                    width: 24.0,
-                    height: 24.0,
-                  ),
-                  // onPressed: () => Scaffold.of(context).openDrawer(),
-                  onPressed: () => {}),
+                icon: Image.asset(
+                  "assets/icons/drawerIcon.png",
+                  width: 24.0,
+                  height: 24.0,
+                ),
+                // onPressed: () => Scaffold.of(context).openDrawer(),
+                onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+              ),
             ),
             body: Column(
               mainAxisAlignment: MainAxisAlignment.start,
