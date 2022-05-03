@@ -7,6 +7,7 @@ import 'package:gpsinstallation/main.dart';
 import 'package:gpsinstallation/screens/imagePickerScreen.dart';
 import 'package:gpsinstallation/screens/stepsView.dart';
 import 'package:gpsinstallation/screens/taskFetch.dart';
+import 'package:gpsinstallation/widgets/drawerWidget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class InstallationPhotos extends StatefulWidget {
@@ -25,13 +26,14 @@ class InstallationPhotos extends StatefulWidget {
       required this.taskId});
 
   static List<bool> successUploading = [false, false, false];
-
   @override
   State<InstallationPhotos> createState() => _InstallationPhotosState();
 }
 
 class _InstallationPhotosState extends State<InstallationPhotos>
     with WidgetsBindingObserver {
+  bool successLoading = false;
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
@@ -65,7 +67,7 @@ class _InstallationPhotosState extends State<InstallationPhotos>
         InstallationPhotos.successUploading[1] &&
         InstallationPhotos.successUploading[2]) {
       TaskFetcher.dataForEachTask[widget.taskId].photosStatus = 2;
-
+      successLoading = true;
       TaskFetcher.dataForEachTask[widget.taskId].completeStatus = true;
 
       await prefs.setInt('_CompletedStep', 8);
@@ -74,6 +76,9 @@ class _InstallationPhotosState extends State<InstallationPhotos>
 
   @override
   Widget build(BuildContext context) {
+    final GlobalKey<ScaffoldState> _scaffoldKey =
+        new GlobalKey<ScaffoldState>();
+
     return WillPopScope(
         onWillPop: () {
           Get.to(StepsView(
@@ -87,47 +92,111 @@ class _InstallationPhotosState extends State<InstallationPhotos>
           return Future.value(false);
         },
         child: Scaffold(
-          appBar: AppBar(
-            title: const Text(
-              "Liveasy GPS Installer",
-              style:
-                  TextStyle(color: darkBlueColor, fontWeight: FontWeight.w700),
+          key: _scaffoldKey,
+          drawer: Drawer(
+            child: DrawerWidget(
+              mobileNum: '7715813911',
+              userName: 'Akshay Krishna',
             ),
-            elevation: 0,
-            backgroundColor: Color(0xFFF0F0F0),
-            automaticallyImplyLeading: true,
-            leading: IconButton(
+          ),
+          appBar: AppBar(
+              title: const Text(
+                "Liveasy GPS Installer",
+                style: TextStyle(
+                    color: darkBlueColor, fontWeight: FontWeight.w700),
+              ),
+              elevation: 0,
+              backgroundColor: Color(0xFFF0F0F0),
+              automaticallyImplyLeading: true,
+              leading: IconButton(
                 icon: Image.asset(
                   "assets/icons/drawerIcon.png",
                   width: 24.0,
                   height: 24.0,
                 ),
                 // onPressed: () => Scaffold.of(context).openDrawer(),
-                onPressed: () => {}),
-          ),
+                onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+              )),
           body: Padding(
             padding: EdgeInsets.all(16),
-            child: Column(children: [
-              Text('Installation photos',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  )),
-              SizedBox(
-                height: 16,
-              ),
-              getCard(0, "GPS ka photo upload \nkare"),
-              SizedBox(
-                height: 12,
-              ),
-              getCard(1, "Relay ka photo upload \nkare"),
-              SizedBox(
-                height: 12,
-              ),
-              getCard(2, "Truck ka samnse se photo \nupload kare"),
-            ]),
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Installation photos',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      )),
+                  Column(
+                    children: [
+                      getCard(0, "GPS ka photo upload \nkare"),
+                      SizedBox(
+                        height: 12,
+                      ),
+                      getCard(1, "Relay ka photo upload \nkare"),
+                      SizedBox(
+                        height: 12,
+                      ),
+                      getCard(2, "Truck ka samnse se photo \nupload kare"),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(0, 0, 0, 8),
+                    child: getNavMenu(),
+                  )
+                ]),
           ),
         ));
+  }
+
+  Row getNavMenu() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        ElevatedButton(
+          onPressed: () => {},
+          style: ElevatedButton.styleFrom(
+              side: BorderSide(
+                width: 1.0,
+                color: darkBlueColor,
+              ),
+              primary: white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(12.0)))),
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text(
+              "Back",
+              style: TextStyle(color: darkBlueColor),
+            ),
+          ),
+        ),
+        Text('Step 8 of 8', style: const TextStyle(fontSize: 12)),
+        ElevatedButton(
+            onPressed: () => {},
+            child: new Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                "Next",
+                style: TextStyle(color: white),
+              ),
+            ),
+            style: ButtonStyle(
+                backgroundColor: (successLoading)
+                    ? MaterialStateProperty.all<Color>(darkBlueColor)
+                    : MaterialStateProperty.all<Color>(grey),
+                shadowColor: MaterialStateProperty.all<Color>(Colors.white),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                        side: (successLoading)
+                            ? BorderSide(color: darkBlueColor)
+                            : BorderSide(color: grey))))),
+      ],
+    );
   }
 
   GestureDetector getCard(int cardId, String textHere) {

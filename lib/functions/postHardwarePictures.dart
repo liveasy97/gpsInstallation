@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:gpsinstallation/main.dart';
 import 'package:gpsinstallation/screens/installPhotos.dart';
@@ -16,6 +17,7 @@ Future<String> postHardwarePictures({
   required String vehicleOwnerName,
   required String vehicleOwnerPhoneNo,
 }) async {
+  EasyLoading.show(status: 'Uploading...');
   try {
     final String documentApiUrl =
         FlutterConfig.get("documentApiUrl").toString();
@@ -51,9 +53,11 @@ Future<String> postHardwarePictures({
           vehicleOwnerPhoneNo: vehicleOwnerPhoneNo,
         ));
         InstallationPhotos.successUploading[CardId] = true;
+        EasyLoading.dismiss();
         return "Success";
       } else {
         print("Failed");
+        EasyLoading.dismiss();
         return "Error ${response.statusCode} \n Printing Response ${response.body}";
       }
     } else {
@@ -74,15 +78,18 @@ Future<String> postHardwarePictures({
           vehicleOwnerName: vehicleOwnerName,
           vehicleOwnerPhoneNo: vehicleOwnerPhoneNo,
         ));
+        EasyLoading.dismiss();
         return "Success";
       } else {
         print("Failed");
+        EasyLoading.dismiss();
         return "Error ${response.statusCode} \n Printing Response ${response.body}";
       }
     }
   } catch (e) {
     print("Error is $e");
     Get.snackbar("Error", "$e", snackPosition: SnackPosition.BOTTOM);
+    EasyLoading.dismiss();
     return "Error Occurred";
   }
 }

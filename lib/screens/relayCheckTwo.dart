@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_config/flutter_config.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:gpsinstallation/constants/color.dart';
@@ -16,6 +17,7 @@ import 'package:gpsinstallation/screens/installPhotos.dart';
 import 'package:gpsinstallation/screens/powerCheckTwo.dart';
 import 'package:gpsinstallation/screens/stepsView.dart';
 import 'package:gpsinstallation/screens/taskFetch.dart';
+import 'package:gpsinstallation/widgets/drawerWidget.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_timer/simple_timer.dart';
@@ -56,6 +58,7 @@ class _RelayCheckTwoState extends State<RelayCheckTwo>
   late TimerController _timerController;
 
   Future<void> sendLockApi() async {
+    EasyLoading.show(status: 'Loading...');
     final prefs = await SharedPreferences.getInstance();
     deviceId = prefs.getString("deviceId")!;
     await postCommandsApi(int.parse(deviceId), "engineResume", "sendingUnlock")
@@ -68,10 +71,12 @@ class _RelayCheckTwoState extends State<RelayCheckTwo>
         print("PROBLEM IN SENDING TO DEVICE $deviceId");
       }
     });
+    EasyLoading.dismiss();
     setState(() {});
   }
 
   Future<void> getCommandsResult() async {
+    EasyLoading.show(status: 'Loading...');
     var timeNow = DateTime.now()
         .subtract(Duration(hours: 5, minutes: 30))
         .toIso8601String();
@@ -121,6 +126,7 @@ class _RelayCheckTwoState extends State<RelayCheckTwo>
         }
       });
     });
+    EasyLoading.dismiss();
   }
 
   @override
@@ -132,27 +138,37 @@ class _RelayCheckTwoState extends State<RelayCheckTwo>
 
   @override
   Widget build(BuildContext context) {
+    final GlobalKey<ScaffoldState> _scaffoldKey =
+        new GlobalKey<ScaffoldState>();
+
     double height = MediaQuery.of(context).size.height;
     return WillPopScope(
       child: Scaffold(
-          appBar: AppBar(
-            title: const Text(
-              "Liveasy GPS Installer",
-              style:
-                  TextStyle(color: darkBlueColor, fontWeight: FontWeight.w700),
+          key: _scaffoldKey,
+          drawer: Drawer(
+            child: DrawerWidget(
+              mobileNum: '7715813911',
+              userName: 'Akshay Krishna',
             ),
-            elevation: 0,
-            backgroundColor: Color(0xFFF0F0F0),
-            automaticallyImplyLeading: true,
-            leading: IconButton(
+          ),
+          appBar: AppBar(
+              title: const Text(
+                "Liveasy GPS Installer",
+                style: TextStyle(
+                    color: darkBlueColor, fontWeight: FontWeight.w700),
+              ),
+              elevation: 0,
+              backgroundColor: Color(0xFFF0F0F0),
+              automaticallyImplyLeading: true,
+              leading: IconButton(
                 icon: Image.asset(
                   "assets/icons/drawerIcon.png",
                   width: 24.0,
                   height: 24.0,
                 ),
                 // onPressed: () => Scaffold.of(context).openDrawer(),
-                onPressed: () => {}),
-          ),
+                onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+              )),
           body: Center(
               child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -283,28 +299,21 @@ class _RelayCheckTwoState extends State<RelayCheckTwo>
     );
   }
 
-  // Route _createRoute() {
-  //   return PageRouteBuilder(
-  //     pageBuilder: (context, animation, secondaryAnimation) => PowerCheckTwo(
-  //       taskId: widget.taskId,
-  //       driverName: widget.driverName,
-  //       driverPhoneNo: widget.driverPhoneNo,
-  //       vehicleNo: widget.vehicleNo,
-  //       vehicleOwnerName: widget.vehicleOwnerName,
-  //       vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
-  //     ),
-  //     transitionsBuilder: (context, animation, secondaryAnimation, child) {
-  //       return child;
-  //     },
-  //   );
-  // }
-
   Row getNavMenu() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         ElevatedButton(
-            onPressed: () => Get.back(),
+            onPressed: () => {
+                  Get.to(StepsView(
+                    taskId: widget.taskId,
+                    driverName: widget.driverName,
+                    driverPhoneNo: widget.driverPhoneNo,
+                    vehicleNo: widget.vehicleNo,
+                    vehicleOwnerName: widget.vehicleOwnerName,
+                    vehicleOwnerPhoneNo: widget.vehicleOwnerPhoneNo,
+                  ))
+                },
             child: new Padding(
               padding: EdgeInsets.all(16.0),
               child: Text(
