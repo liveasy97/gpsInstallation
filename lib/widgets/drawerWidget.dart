@@ -13,6 +13,7 @@ import 'package:gpsinstallation/controller/navigationIndexController.dart';
 import 'package:gpsinstallation/providerclass/drawerProviderClassData.dart';
 import 'package:gpsinstallation/screens/loginScreen.dart';
 import 'package:gpsinstallation/screens/taskFetch.dart';
+import 'package:gpsinstallation/screens/taskFetchComplete.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 
@@ -142,6 +143,7 @@ class DrawerWidget extends StatelessWidget {
                     GestureDetector(
                       onTap: () {
                         Navigator.of(context).pop();
+                        Get.to(TaskFetcherComplete());
                       },
                       child: ListTile(
                         title: Text("Completed Tasks",
