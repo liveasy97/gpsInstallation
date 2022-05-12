@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_config/flutter_config.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:gpsinstallation/constants/color.dart';
 import 'package:gpsinstallation/data/installDataHolder.dart';
 import 'package:gpsinstallation/screens/imeiCheck.dart';
@@ -47,7 +51,7 @@ class _StepsViewState extends State<StepsView> {
     "Relay check 2",
     "Installation photos"
   ];
-
+  String installerAPIKey = FlutterConfig.get("installerApi");
   var prefs;
 
   @override
@@ -504,7 +508,20 @@ class _StepsViewState extends State<StepsView> {
         ),
         Text('', style: const TextStyle(fontSize: 12)),
         ElevatedButton(
-            onPressed: () => {Get.to(SubmittedScreen())},
+            onPressed: () async {
+              if (TaskFetcher.dataForEachTask[widget.taskId].completeStatus) {
+                Map data = {"installerTaskStatus": "Completed"};
+                String body = json.encode(data);
+
+                final response = await http.post(
+                    Uri.parse(installerAPIKey + widget.vehicleNo.toString()),
+                    headers: <String, String>{
+                      'Content-Type': 'application/json; charset=UTF-8',
+                    },
+                    body: body);
+                Get.to(SubmittedScreen());
+              }
+            },
             child: new Padding(
               padding: EdgeInsets.all(16.0),
               child: Text(

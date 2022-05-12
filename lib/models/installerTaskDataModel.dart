@@ -10,6 +10,7 @@ class InstallerTaskModel {
   String? installationCompleteDate;
   String? installationLocation;
   String? gpsInstallerId;
+  String? installerTaskStatus;
 
   InstallerTaskModel(
       {this.installerTaskId,
@@ -22,7 +23,8 @@ class InstallerTaskModel {
       this.installationDate,
       this.installationCompleteDate,
       this.installationLocation,
-      this.gpsInstallerId});
+      this.gpsInstallerId,
+      this.installerTaskStatus});
 
   InstallerTaskModel.fromJson(Map<String, dynamic> json) {
     installerTaskId = json['installerTaskId'];
@@ -36,6 +38,7 @@ class InstallerTaskModel {
     installationCompleteDate = json['installationCompleteDate'];
     installationLocation = json['installationLocation'];
     gpsInstallerId = json['gpsInstallerId'];
+    installerTaskStatus = json['installerTaskStatus'];
   }
 
   Map<String, dynamic> toJson() {
@@ -51,6 +54,7 @@ class InstallerTaskModel {
     data['installationCompleteDate'] = this.installationCompleteDate;
     data['installationLocation'] = this.installationLocation;
     data['gpsInstallerId'] = this.gpsInstallerId;
+    data['installerTaskStatus'] = this.installerTaskStatus;
     return data;
   }
 }

@@ -20,23 +20,23 @@ import 'package:gpsinstallation/widgets/drawerWidget.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-class TaskFetcher extends StatefulWidget {
-  const TaskFetcher({Key? key}) : super(key: key);
+class TaskFetcherComplete extends StatefulWidget {
+  const TaskFetcherComplete({Key? key}) : super(key: key);
   static late List<InstallDataHolder> dataForEachTask = <InstallDataHolder>[];
   @override
-  State<TaskFetcher> createState() => _TaskFetcherState();
+  State<TaskFetcherComplete> createState() => _TaskFetcherCompleteState();
 }
 
-class _TaskFetcherState extends State<TaskFetcher> {
+class _TaskFetcherCompleteState extends State<TaskFetcherComplete> {
   String installerAPIKey = FlutterConfig.get("installerApi");
   late List<InstallerTaskModel> _installerTaskListModel =
       <InstallerTaskModel>[];
-  late List<InstallerTaskModel> _installerTaskListModelPending =
+  late List<InstallerTaskModel> _installerTaskListModelComplete =
       <InstallerTaskModel>[];
   bool successLoading = false;
   var prefs;
   Future<void> callApi() async {
-    _installerTaskListModelPending = <InstallerTaskModel>[];
+    _installerTaskListModelComplete = <InstallerTaskModel>[];
     EasyLoading.show(status: 'Loading...');
     String uid = FirebaseAuth.instance.currentUser!.uid.toString();
     var url = Uri.parse(installerAPIKey + "?gpsInstallerId=" + uid);
@@ -48,17 +48,17 @@ class _TaskFetcherState extends State<TaskFetcher> {
           .toList();
     } catch (e) {}
     for (int i = 0; i < _installerTaskListModel.length; i++) {
-      if (_installerTaskListModel[i].installerTaskStatus != "Completed") {
-        _installerTaskListModelPending.add(_installerTaskListModel[i]);
+      if (_installerTaskListModel[i].installerTaskStatus == "Completed") {
+        _installerTaskListModelComplete.add(_installerTaskListModel[i]);
       }
     }
     setState(() {
-      for (int i = 0; i < _installerTaskListModelPending.length; i++) {
-        TaskFetcher.dataForEachTask.add(InstallDataHolder(
+      for (int i = 0; i < _installerTaskListModelComplete.length; i++) {
+        TaskFetcherComplete.dataForEachTask.add(InstallDataHolder(
             installerTaskID:
-                _installerTaskListModelPending[i].installerTaskId));
+                _installerTaskListModelComplete[i].installerTaskId));
         print("DATA HERE " +
-            TaskFetcher.dataForEachTask[i].installerTaskID.toString());
+            TaskFetcherComplete.dataForEachTask[i].installerTaskID.toString());
         successLoading = true;
       }
     });
@@ -115,7 +115,7 @@ class _TaskFetcherState extends State<TaskFetcher> {
                 const SizedBox(
                   height: 16,
                 ),
-                Text('Aapke tasks',
+                Text('Aapke completed tasks',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -129,48 +129,18 @@ class _TaskFetcherState extends State<TaskFetcher> {
                                   parent: AlwaysScrollableScrollPhysics()),
                               scrollDirection: Axis.vertical,
                               itemCount:
-                                  (_installerTaskListModelPending[0] != null)
-                                      ? _installerTaskListModelPending.length
+                                  (_installerTaskListModelComplete[0] != null)
+                                      ? _installerTaskListModelComplete.length
                                       : 0,
                               itemBuilder: (context, index) {
                                 InstallerTaskModel here =
-                                    _installerTaskListModelPending[index];
+                                    _installerTaskListModelComplete[index];
                                 print("DISTANCE ABCD " +
                                     here.driverName.toString());
                                 return Padding(
                                     padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
                                     child: GestureDetector(
-                                      onTap: (() async {
-                                        prefs = await SharedPreferences
-                                            .getInstance();
-                                        String? currentTask =
-                                            prefs.getString("CurrentTask");
-
-                                        if (currentTask ==
-                                                here.vehicleNo.toString() ||
-                                            currentTask == null) {
-                                          Get.to(StepsView(
-                                            driverName:
-                                                here.driverName.toString(),
-                                            driverPhoneNo:
-                                                here.driverPhoneNo.toString(),
-                                            vehicleNo:
-                                                here.vehicleNo.toString(),
-                                            vehicleOwnerName: here
-                                                .vehicleOwnerName
-                                                .toString(),
-                                            vehicleOwnerPhoneNo: here
-                                                .vehicleOwnerPhoneNo
-                                                .toString(),
-                                            taskId: index,
-                                          ));
-                                        } else {
-                                          _showMyDialog(
-                                              here.vehicleNo.toString(),
-                                              here,
-                                              index);
-                                        }
-                                      }),
+                                      onTap: () {},
                                       child: Card(
                                         child: Padding(
                                           padding: EdgeInsets.fromLTRB(
@@ -218,20 +188,14 @@ class _TaskFetcherState extends State<TaskFetcher> {
                                                     // ignore: prefer_const_literals_to_create_immutables
                                                     children: [
                                                       Text(
-                                                        "Install Kren",
+                                                        "Installation\nComplete",
                                                         style: TextStyle(
                                                             fontSize: 16.0,
-                                                            color:
-                                                                darkBlueColor,
+                                                            color: Colors.green,
                                                             fontWeight:
                                                                 FontWeight
                                                                     .bold),
                                                       ),
-                                                      Icon(
-                                                          Icons
-                                                              .arrow_right_sharp,
-                                                          color: darkBlueColor,
-                                                          size: 24),
                                                     ],
                                                   ),
                                                 )
@@ -311,9 +275,9 @@ class _TaskFetcherState extends State<TaskFetcher> {
                 await prefs.remove('longitude');
                 await prefs.remove('latitude');
                 await prefs.remove('deviceId');
-                TaskFetcher.dataForEachTask[index] = InstallDataHolder(
+                TaskFetcherComplete.dataForEachTask[index] = InstallDataHolder(
                     installerTaskID:
-                        _installerTaskListModelPending[index].installerTaskId);
+                        _installerTaskListModelComplete[index].installerTaskId);
                 Get.to(StepsView(
                   driverName: here.driverName.toString(),
                   driverPhoneNo: here.driverPhoneNo.toString(),
