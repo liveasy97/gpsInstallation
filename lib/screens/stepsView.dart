@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_config/flutter_config.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -50,7 +51,7 @@ class _StepsViewState extends State<StepsView> {
     "Relay check 2",
     "Installation photos"
   ];
-
+  String installerAPIKey = FlutterConfig.get("installerApi");
   var prefs;
 
   @override
@@ -513,9 +514,7 @@ class _StepsViewState extends State<StepsView> {
                 String body = json.encode(data);
 
                 final response = await http.post(
-                    Uri.parse(
-                        "http://load.dev.truckseasy.com:8080/installerTask/" +
-                            widget.vehicleNo.toString()),
+                    Uri.parse(installerAPIKey + widget.vehicleNo.toString()),
                     headers: <String, String>{
                       'Content-Type': 'application/json; charset=UTF-8',
                     },
